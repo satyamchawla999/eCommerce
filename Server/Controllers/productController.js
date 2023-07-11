@@ -1,0 +1,122 @@
+const Product = require("../Model/products");
+
+module.exports.updateProduct = async (req, res) => {
+  console.log("hello update",req.files)
+  const files = req.files;
+
+  let {
+    uid,
+    name,
+    price,
+    description,
+    category,
+    subCategory,
+    vName,
+    vUid,
+    brandName,
+  } = req.body;
+
+  try {
+    let product = await Product.findOne({ uid: req.body.uid });
+
+    let imgUrl = [
+      files?.image1 ? files?.image1[0]?.filename : product.imgUrl[0],
+      files?.image2 ? files?.image2[0]?.filename : product.imgUrl[1],
+      files?.image3 ? files?.image3[0]?.filename : product.imgUrl[2],
+      files?.image4 ? files?.image4[0]?.filename : product.imgUrl[3],
+    ];
+
+    const data = {
+      uid: uid,
+      name: name,
+      price: price,
+      description: description,
+      category: category,
+      imgUrl: imgUrl,
+      subCategory: subCategory,
+      vName: vName,
+      vUid: vUid,
+      brandName: brandName,
+    };
+
+    console.log(data);
+
+    product = await Product.updateOne({ uid: req.body.uid },data);
+    
+
+    return res.redirect("http://localhost:3000/profile");
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the product.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.addProduct = async (req, res) => {
+  const files = req.files; // Use req.files instead of req.file
+
+  let {
+    uid,
+    name,
+    price,
+    description,
+    category,
+    subCategory,
+    vName,
+    vUid,
+    brandName,
+  } = req.body;
+
+  try {
+    let product = await Product.findOne({ uid: req.body.uid });
+
+    if (!product) {
+      let imgUrl = [
+        files.image1[0]?.filename,
+        files.image2[0]?.filename,
+        files.image3[0]?.filename,
+        files.image4[0]?.filename,
+      ];
+
+      const data = {
+        uid: uid,
+        name: name,
+        price: price,
+        description: description,
+        category: category,
+        imgUrl: imgUrl,
+        subCategory: subCategory,
+        vName: vName,
+        vUid: vUid,
+        brandName: brandName,
+      };
+
+      product = await Product.create(data);
+      return res.redirect("http://localhost:3000/profile");
+    } else {
+      res.statusMessage = "Product Already Exists";
+      return res.redirect("http://localhost:3000/profile");
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the product.";
+    return res.status(500).end();
+  }
+};
+
+
+module.exports.getProduct = async (req, res) => {
+  try {
+    let product = await Product.find();
+    if (product !== []) {
+      return res.status(201).send(product);
+    } else {
+      res.statusMessage = "product Already Exists";
+      return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the product.";
+    return res.status(500).end();
+  }
+};
