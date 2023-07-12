@@ -32,6 +32,11 @@ router.get(
   productController.getProduct
 );
 
+router.post(
+  "/delete",
+  productController.deleteProduct
+);
+
 
 
 module.exports = router;

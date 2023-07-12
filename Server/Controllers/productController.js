@@ -1,5 +1,6 @@
 const Product = require("../Model/products");
 
+
 module.exports.updateProduct = async (req, res) => {
   console.log("hello update",req.files)
   const files = req.files;
@@ -117,6 +118,24 @@ module.exports.getProduct = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.statusMessage = "An error occurred while creating the product.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.deleteProduct = async (req, res) => {
+  console.log(req.body);
+  try {
+    let product = await Product.findOne({ uid: req.body.uid });
+    if (product) {
+      await Product.deleteOne({ uid: req.body.uid }); 
+      return res.status(201).send("Deleted Successfully!");
+    } else {
+      res.statusMessage = "Product not found"; 
+      return res.status(404).end(); 
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while deleting the product.";
     return res.status(500).end();
   }
 };

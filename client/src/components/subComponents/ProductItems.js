@@ -2,6 +2,7 @@ import React,{useState} from "react";
 import { Modal } from "antd";
 import { ModalData } from "./";
 import { useSelector } from "react-redux";
+import axios from "axios"
 
 const ProductItems = (props) => {
   const { product } = props;
@@ -19,6 +20,17 @@ const ProductItems = (props) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const handleDelete = async () => {
+    try {
+      const response = await axios.post("http://localhost:8000/product/delete",{uid:product.uid});
+      if(response.status===201) {
+        console.log("Deleted Successfully!")
+      }
+    } catch(err) {
+      console.log(err);
+    }
+  }
   return (
     <>
       <div key={product.uid} className="group relative">
@@ -39,7 +51,7 @@ const ProductItems = (props) => {
             </h3>
             {userData.role === "Customer" ? (
               <p className="mt-1 text-sm text-gray-500">
-                Rs {product.description}
+                {product.description}
               </p>
             ) : (
               <p className="mt-1 text-sm text-gray-500">Rs {product.price}</p>
@@ -47,7 +59,7 @@ const ProductItems = (props) => {
           </div>
 
           {userData.role === "Customer" ? (
-            <p className="text-sm font-medium text-red-500">{product.price}</p>
+            <p className="text-sm font-medium "> Rs {product.price}</p>
           ) : (
             <p className="text-sm font-medium">
               <span>
@@ -56,7 +68,7 @@ const ProductItems = (props) => {
                 </span>
               </span>
 
-              <span className="text-red-500 ml-2">
+              <span className="text-red-500 ml-2 editIcon" onClick={handleDelete} >
                 <i className="fa-regular fa-trash-can"></i>
               </span>
             </p>

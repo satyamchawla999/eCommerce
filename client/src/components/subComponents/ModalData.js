@@ -12,13 +12,7 @@ const ModalData = (props) => {
     image3: (product ? (BASE_IMG_URL+product?.imgUrl[2]) : ""),
     image4: (product ? (BASE_IMG_URL+product?.imgUrl[3]) : ""),
   });
-
-  // const [img, setImg] = useState({
-  //   image1: "",
-  //   image2: "",
-  //   image3: "",
-  //   image4: "",
-  // });
+  const [values,setValues] = useState(product);
 
   const handleChange = (e) => {
     const file = e.target.files[0];
@@ -99,7 +93,7 @@ const ModalData = (props) => {
 
           <div className="valueInput">
             <label>Product Name</label>
-            <input type="text" name="name" value={product?.name} required />
+            <input type="text" name="name" value={values.name} required />
             {/* <input type="text" name="name" required /> */}
 
             <label htmlFor="category">Category</label>
