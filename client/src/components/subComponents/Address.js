@@ -1,13 +1,32 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import "../../assets/styles/address.scss";
 import { useSelector } from "react-redux";
 import axios from 'axios';
+import {AddressItems} from "./index";
 
 const Address = () => {
 
     const userData = useSelector((state) => state.userData);
-    const [address,setAddress] = useState({});
-    console.log(address)
+    const [newAddress,setNewAddress] = useState(false);
+    const [address,setAddress] = useState([]);
+
+    useEffect(()=>{
+        const getAddress = async ()=> {
+            try {
+                const response = await axios.post(
+                    "http://localhost:8000/user/get-address",{uid:userData.uid}
+                );
+    
+                if (response.status === 201) {
+                    setAddress(response.data);
+                }
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        getAddress();
+    },[newAddress])
 
     const handleSubmit = async (e) => {
 
@@ -33,7 +52,7 @@ const Address = () => {
             );
 
             if (response.status === 201) {
-                setAddress(response.data);
+                setNewAddress(!newAddress);
             }
         } catch (err) {
             console.log(err);
@@ -61,6 +80,10 @@ const Address = () => {
                     Add Address
                 </button>
             </form>
+
+            <div className="addressItemContainer">
+                {address?.map((item,index)=><AddressItems key={item.uid} item={item} number={index} />)}
+            </div>
         </div>
     )
 }

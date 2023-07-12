@@ -114,6 +114,11 @@ const Header = () => {
                             Logout{" "}
                             <i class="fa-solid fa-arrow-right-from-bracket"></i>
                           </button>
+                          <br></br>
+                          <Link to="/">
+                            Home{" "}
+                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                          </Link>
                         </div>
                       </div>
                     </Dialog.Panel>

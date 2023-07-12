@@ -5,6 +5,7 @@ import ModalData from "./ModalData";
 import ProductItems from "./ProductItems";
 import ProductPage from "./ProductPage";
 import Address from "./Address";
+import AddressItems from "./AddressItems"
 
 export {
     Header,
@@ -13,5 +14,6 @@ export {
     ModalData,
     ProductItems,
     ProductPage,
-    Address
+    Address,
+    AddressItems
 }

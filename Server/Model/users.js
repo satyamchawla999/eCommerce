@@ -26,6 +26,10 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    cart: [{
+        type: Object,
+        required: true,
+    }],
     address: [{
         type: Object,
         required: true,
