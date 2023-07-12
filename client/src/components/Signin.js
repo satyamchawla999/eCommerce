@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import { notification, Radio } from "antd";
+import { notification } from "antd";
 import {
   signInWithGoogle,
   logInWithEmailAndPassword,
@@ -34,8 +34,8 @@ const Signin = () => {
     if (response) {
       dispatch(setUser());
       dispatch(setUserData(response));
+      openNotificationWithIcon("success", "Sign in successfull!");
       Navigate("/");
-      return openNotificationWithIcon("success", "Sign in successfull!");
     }
   };
 

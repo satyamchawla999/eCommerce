@@ -37,6 +37,11 @@ router.post(
   productController.deleteProduct
 );
 
+router.post(
+  "/get-single-product",
+  productController.getSingleProduct
+);
+
 
 
 module.exports = router;

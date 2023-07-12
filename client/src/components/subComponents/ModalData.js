@@ -1,18 +1,32 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 
+import { getValues, getImages } from "../../Utils/constant";
+
 const ModalData = (props) => {
+
   const { product } = props;
-  const BASE_IMG_URL = "http://localhost:8000/Products/";
   const userData = useSelector((state) => state.userData);
 
-  const [img, setImg] = useState({
-    image1: (product ? (BASE_IMG_URL+product?.imgUrl[0]) : ""),
-    image2: (product ? (BASE_IMG_URL+product?.imgUrl[1]) : ""),
-    image3: (product ? (BASE_IMG_URL+product?.imgUrl[2]) : ""),
-    image4: (product ? (BASE_IMG_URL+product?.imgUrl[3]) : ""),
-  });
-  const [values,setValues] = useState(product);
+  const [values, setValues] = useState(getValues(product));
+  const [img, setImg] = useState(getImages(product));
+  const [draft, setDraft] = useState(false);
+
+  const isRequired = product ? false : true;
+  const formAction = product ? "update-product" : "add-product";
+
+  // const handleSubmit = async () =>{
+  //   console.log(values);
+  //   // try {
+  //   //   const response = await axios({
+  //   //     method: "post",
+  //   //     url: `http://localhost:8000/product/${formAction}`,
+  //   //     headers : {"Content-Type":"multipart/form-data"}
+  //   //   })
+  //   // } catch (err) {
+
+  //   // }
+  // }
 
   const handleChange = (e) => {
     const file = e.target.files[0];
@@ -30,7 +44,15 @@ const ModalData = (props) => {
     }
   };
 
-  let formAction = product ? "update-product" : "add-product";
+  const handleValues = (e) => {
+    setValues(e.target.value)
+  }
+
+  const handleDraft = () => {
+    setDraft(!draft)
+  }
+
+
 
   return (
     <>
@@ -51,7 +73,7 @@ const ModalData = (props) => {
               type="file"
               name="image1"
               accept="image/*"
-              required
+              required={isRequired}
             />
 
             <label htmlFor="image2">
@@ -63,7 +85,7 @@ const ModalData = (props) => {
               type="file"
               name="image2"
               accept="image/*"
-              required
+              required={isRequired}
             />
 
             <label htmlFor="image3">
@@ -75,7 +97,7 @@ const ModalData = (props) => {
               type="file"
               name="image3"
               accept="image/*"
-              required
+              required={isRequired}
             />
 
             <label htmlFor="image4">
@@ -87,14 +109,13 @@ const ModalData = (props) => {
               type="file"
               name="image4"
               accept="image/*"
-              required
+              required={isRequired}
             />
           </div>
 
           <div className="valueInput">
             <label>Product Name</label>
-            <input type="text" name="name" value={values.name} required />
-            {/* <input type="text" name="name" required /> */}
+            <input type="text" name="name" value={values?.name} onChange={handleValues} required />
 
             <label htmlFor="category">Category</label>
             <select name="category" id="category">
@@ -111,57 +132,56 @@ const ModalData = (props) => {
             </select>
 
             <label>Price</label>
-            <input type="number" name="price" required value={product?.price}/>
-            {/* <input type="number" name="price" required /> */}
+            <input type="number" name="price" required value={values?.price} onChange={handleValues} />
 
             <label>Description</label>
-            <input type="text" name="description" required value={product?.description}/>
-            {/* <input type="text" name="description" required /> */}
+            <input type="text" name="description" required value={values?.description} onChange={handleValues} />
 
             <label>Product Code</label>
-            <input type="text" name="uid" required value={product?.uid} disabled={product ? true : false} />
-            {(product) && <input style={{display:"none"}} type="text" name="uid" required value={product?.uid} />}
-
-            {/* <input type="text" name="uid" required /> */}
+            <input type="text" name="uid" required value={values?.uid} disabled={product ? true : false} onChange={handleValues} />
+            {(product) && <input style={{ display: "none" }} type="text" name="uid" required value={values?.uid} />}
 
             <input
               className="disable"
               type="text"
               name="vName"
-              value={product ? product?.vName : userData.name}
+              value={product ? values?.vName : userData.name}
+              onChange={handleValues}
               required
             />
 
-            {/* <input
-              className="disable"
-              type="text"
-              name="vName"
-              value={userData.name}
-              required
-            /> */}
+
 
             <input
               className="disable"
               type="text"
               name="vUid"
-              value={product ? product?.vUid : userData.uid}
+              value={product ? values?.vUid : userData.uid}
+              onChange={handleValues}
               required
             />
-
-            {/* <input
-              className="disable"
-              type="text"
-              name="vUid"
-              value={userData.uid}
-              required
-            /> */}
 
             <label>Brand Name</label>
-            <input type="text" name="brandName" required value={product?.brandName}/>
-            {/* <input type="text" name="brandName" required /> */}
+            <input type="text" name="brandName" required value={values?.brandName} onClick={handleValues} />
+
+            {product && product?.draft === true && <div style={{ display: "flex", alignItems: "center" }} className="draft" onClick={handleDraft}>
+              <input style={{ height: "18px", width: "18px", margin: "0px", padding: "0" }} checked={draft} id="draft" name="draft" type="checkbox" value={values?.draft === true ? !draft : draft} />
+              <label style={{ marginLeft: "5px" }} htmlFor="draft"> {values?.draft === true ? <>Publish</> : <>Add To Draft</>} </label>
+            </div> }
+
+            {!product && <div style={{ display: "flex", alignItems: "center" }} className="draft" onClick={handleDraft}>
+              <input style={{ height: "18px", width: "18px", margin: "0px", padding: "0" }} checked={draft} id="draft" name="draft" type="checkbox" value={values?.draft === true ? !draft : draft} />
+              <label style={{ marginLeft: "5px" }} htmlFor="draft"> {values?.draft === true ? <>Publish</> : <>Add To Draft</>} </label>
+            </div>}
+            
+
           </div>
         </div>
-        <button>Submit</button>
+
+        <div className="formButton">
+          <button>Submit</button>
+        </div>
+
       </form>
     </>
   );

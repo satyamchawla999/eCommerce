@@ -51,7 +51,7 @@
 
       right: 30px;
       bottom: 20px;
-      font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",sans-serif;
+      font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
       font-size: 50px;
       height: 70px;
       width: 70px;
@@ -106,6 +106,7 @@
       width: 50%;
       height: 100%;
       padding: 0px 20px;
+      padding-bottom: 20px;
       display: flex;
       flex-direction: column;
 
@@ -116,6 +117,7 @@
         margin-bottom: 10px;
         padding: 5px;
       }
+
 
       select {
         width: 100%;
@@ -131,10 +133,20 @@
     }
   }
 
-  button {
+  .formButton {
     width: 100%;
     height: 40px;
-    background-color: black;
-    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row-reverse;
+
+    button {
+      width: 100%;
+      height: 40px;
+      background-color: black;
+      color: white;
+    }
   }
+
 }

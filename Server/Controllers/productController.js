@@ -15,6 +15,7 @@ module.exports.updateProduct = async (req, res) => {
     vName,
     vUid,
     brandName,
+    draft
   } = req.body;
 
   try {
@@ -38,6 +39,7 @@ module.exports.updateProduct = async (req, res) => {
       vName: vName,
       vUid: vUid,
       brandName: brandName,
+      draft: (draft ? draft :false)
     };
 
     console.log(data);
@@ -66,6 +68,7 @@ module.exports.addProduct = async (req, res) => {
     vName,
     vUid,
     brandName,
+    draft
   } = req.body;
 
   try {
@@ -90,6 +93,7 @@ module.exports.addProduct = async (req, res) => {
         vName: vName,
         vUid: vUid,
         brandName: brandName,
+        draft: (draft ? draft :false)
       };
 
       product = await Product.create(data);
@@ -129,6 +133,23 @@ module.exports.deleteProduct = async (req, res) => {
     if (product) {
       await Product.deleteOne({ uid: req.body.uid }); 
       return res.status(201).send("Deleted Successfully!");
+    } else {
+      res.statusMessage = "Product not found"; 
+      return res.status(404).end(); 
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while deleting the product.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.getSingleProduct = async (req, res) => {
+  console.log(req.body);
+  try {
+    let product = await Product.findOne({ uid: req.body.uid });
+    if (product) {
+      return res.status(201).send(product);
     } else {
       res.statusMessage = "Product not found"; 
       return res.status(404).end(); 

@@ -2,26 +2,28 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { ProductItems } from "./subComponents";
+import { notification } from "antd";
+import "../assets/styles/home.scss"
 
 const callouts = [
   {
-    name: 'Desk and Office',
-    description: 'Work from home accessories',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-01.jpg',
+    name: '',
+    description: 'Women Collection',
+    imageSrc: require("../assets/images/women.png"),
     imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
     href: '#',
   },
   {
-    name: 'Self-Improvement',
-    description: 'Journals and note-taking',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-02.jpg',
+    name: '',
+    description: 'Latest Collection',
+    imageSrc: 'https://i.pinimg.com/originals/c7/09/ac/c709acb1309dfcccc6aa0d67a90a316c.jpg',
     imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
     href: '#',
   },
   {
-    name: 'Travel',
-    description: 'Daily commute essentials',
-    imageSrc: 'https://tailwindui.com/img/ecommerce-images/home-page-02-edition-03.jpg',
+    name: '',
+    description: 'Men Collection',
+    imageSrc: require("../assets/images/man.png"),
     imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
     href: '#',
   },
@@ -30,6 +32,7 @@ const callouts = [
 const Home = () => {
   const userData = useSelector((state) => state.userData);
   const [products, setProducts] = useState([]);
+  const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
     const getProducts = async () => {
@@ -50,8 +53,9 @@ const Home = () => {
 
   return (
     <>
-      <div className="bg-gray-100">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    {contextHolder}
+      <div className="bg-white-100">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0">
           <div className="mx-auto max-w-2xl py-16 sm:py-0 lg:max-w-none lg:py-10">
 
             <div className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
@@ -80,11 +84,13 @@ const Home = () => {
         </div>
       </div>
 
+      <p className="mostTrending">MOST TRENDING</p>
+
       <div className="bg-white">
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
             {products.map((product) => (
-              <ProductItems product={product} />
+              product.vUid !== userData.uid && product.draft === false && <ProductItems product={product} />
             ))}
           </div>
         </div>

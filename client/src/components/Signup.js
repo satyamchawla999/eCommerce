@@ -120,7 +120,7 @@ const Signup = () => {
             <Radio value={"Vendor"}>Vendor</Radio>
           </Radio.Group>
 
-          <button style={{ marginBottom: "5px" }}>SIGN UP</button>
+          <button>SIGN UP</button>
         </form>
 
         <p>
@@ -129,7 +129,6 @@ const Signup = () => {
 
         <button
           className="authButton"
-          style={{ marginTop: "5px" }}
           onClick={authRegistration}
         >
           <img

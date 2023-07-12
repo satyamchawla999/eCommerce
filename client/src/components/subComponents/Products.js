@@ -6,22 +6,11 @@ import { ModalData, ProductItems } from "./";
 import "../../assets/styles/products.css";
 import axios from "axios";
 
-const Products = () => {
+const Products = (props) => {
+  const { draft,display } = props;
   const userData = useSelector((state) => state.userData);
   const [products, setProducts] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleOk = () => {
-    setIsModalOpen(false);
-  };
-
-  const handleCancel = () => {
-    setIsModalOpen(false);
-  };
+  const [deleteProduct, setDeleteProduct] = useState(false);
 
   useEffect(() => {
     const getProducts = async () => {
@@ -38,17 +27,19 @@ const Products = () => {
       }
     };
     getProducts();
-  }, []);
+  }, [deleteProduct]);
 
   return (
     <>
       <div className="bg-white">
-        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
+        <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-10 lg:max-w-7xl lg:px-8">
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">{display}</h2>
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
             {products.map(
               (product) =>
-                product?.vUid === userData.uid && (
-                  <ProductItems product={product} />
+                product?.vUid === userData.uid && (draft === false ?
+                  product?.draft === false && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} /> :
+                  product?.draft === true && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} />
                 )
             )}
           </div>

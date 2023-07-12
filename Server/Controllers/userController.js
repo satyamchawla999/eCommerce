@@ -45,3 +45,26 @@ module.exports.signIn = async (req, res) => {
     return res.status(500).end();
   }
 };
+
+module.exports.addAddress = async (req, res) => {
+  console.log(req.body)
+  try {
+    let user = await User.findOneAndUpdate(
+      { uid: req.body.uid },
+      { $push: { address: req.body } },
+      { new: true }
+    );
+    console.log("user", user);
+    if (user) {
+      console.log(user);
+      return res.status(201).send(user.address);
+    } else {
+      res.statusMessage = "User Not Found";
+      return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the user.";
+    return res.status(500).end();
+  }
+};

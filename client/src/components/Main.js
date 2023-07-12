@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Home, Signin, Signup, Profile } from "./";
-import { Header } from "./subComponents";
+import { Header, ProductPage } from "./subComponents";
 
 const Page404 = () => {
   return <h1>404 not found</h1>;
@@ -25,6 +25,7 @@ const Main = () => {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/productpage/:id" element={<ProductPage />} />
 
           <Route
             path="/signin"
