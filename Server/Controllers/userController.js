@@ -89,16 +89,25 @@ module.exports.getAddress = async (req, res) => {
 };
 
 module.exports.addCart = async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
+  const { uid, pUid, quantity } = req.body;
   try {
-    let user = await User.findOneAndUpdate(
-      { uid: req.body.uid },
-      { $push: { cart: req.body } },
-      { new: true }
-    );
-    console.log("user", user);
+    let user = await User.findOne({ uid: req.body.uid });
+
     if (user) {
-      console.log(user);
+      // Check if the cart item already exists
+      const cartItem = user.cart.find(item => item.pUid === pUid);
+      if (cartItem) {
+        // Update the quantity of the existing cart item
+        cartItem.quantity += quantity;
+      } else {
+        // Add the new cart item
+        user.cart.push(req.body);
+      }
+
+      await user.save(); // Save the updated user
+      console.log(user.cart);
+
       return res.status(201).send(user.cart);
     } else {
       res.statusMessage = "User Not Found";
@@ -106,7 +115,8 @@ module.exports.addCart = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.statusMessage = "An error occurred while creating the user.";
+    res.statusMessage = "An error occurred while adding to the cart.";
     return res.status(500).end();
   }
 };
+

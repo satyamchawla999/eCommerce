@@ -48,7 +48,11 @@ const Header = () => {
         </Link>
         <img src={require("../../assets/images/heart.png")} alt="#" />
         <img src={require("../../assets/images/search.png")} alt="#" />
+        <Link to="/cart">
+
         <img src={require("../../assets/images/shopping-bag.png")} alt="#" />
+        </Link>
+
       </div>
 
       {user && (
