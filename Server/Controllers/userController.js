@@ -1,4 +1,6 @@
 let User = require("../Model/users");
+let Product = require("../Model/products");
+// let productController = require("./productController")
 
 module.exports.signUp = async (req, res) => {
 
@@ -89,34 +91,77 @@ module.exports.getAddress = async (req, res) => {
 };
 
 module.exports.addCart = async (req, res) => {
-  console.log(req.body);
-  const { uid, pUid, quantity } = req.body;
+  let { uid, pUid, quantity, update } = req.body;
   try {
     let user = await User.findOne({ uid: req.body.uid });
 
     if (user) {
-      // Check if the cart item already exists
-      const cartItem = user.cart.find(item => item.pUid === pUid);
-      if (cartItem) {
-        // Update the quantity of the existing cart item
-        cartItem.quantity += quantity;
+      const cartItemIndex = user.cart.findIndex(item => item.pUid === pUid);
+      if (cartItemIndex !== -1) {
+
+        // console.log(typeof (quantity))
+
+        if (update === true) {
+          user.cart[cartItemIndex].quantity = parseInt(quantity);
+
+        } else {
+          quantity = parseInt(user.cart[cartItemIndex].quantity) + parseInt(quantity);
+          user.cart[cartItemIndex].quantity = quantity;
+        }
+
+
       } else {
-        // Add the new cart item
-        user.cart.push(req.body);
+        user.cart.push({ pUid, quantity, uid });
       }
 
-      await user.save(); // Save the updated user
-      console.log(user.cart);
+      user.markModified('cart');
+      await user.save();
 
       return res.status(201).send(user.cart);
+    } else {
+      res.statusMessage = 'User Not Found';
+      return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = 'An error occurred while adding to the cart.';
+    return res.status(500).end();
+  }
+};
+
+
+
+
+
+
+module.exports.getCartItems = async (req, res) => {
+  const { uid } = req.body;
+  try {
+    let user = await User.findOne({ uid: uid });
+
+    if (user) {
+
+      let cart = [];
+
+      for (const item of user.cart) {
+        let product = await Product.findOne({ uid: item.pUid });
+        if (product) {
+          const data = {
+            product: product,
+            quantity: item.quantity
+          };
+          cart.push(data);
+        }
+      }
+
+      return res.status(201).send(cart);
     } else {
       res.statusMessage = "User Not Found";
       return res.status(409).end();
     }
   } catch (err) {
     console.error(err);
-    res.statusMessage = "An error occurred while adding to the cart.";
+    res.statusMessage = "An error occurred while finding cart items.";
     return res.status(500).end();
   }
 };
-

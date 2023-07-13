@@ -9,7 +9,7 @@ router.post('/sign-in',userController.signIn);
 router.post('/add-address',userController.addAddress);
 router.post('/get-address',userController.getAddress);
 router.post('/add-cart',userController.addCart);
-// router.post('/get-cart-items',userController.getCartItems);
+router.post('/get-cart-items',userController.getCartItems);
 
 
 

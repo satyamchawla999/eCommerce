@@ -5,6 +5,7 @@ import { RadioGroup } from "@headlessui/react";
 import { useParams } from "react-router-dom";
 import { getImages, getValues } from "../../Utils/constant";
 import axios from "axios";
+import "../../assets/styles/productPage.css"
 
 const dummyData = {
   name: "Basic Tee 6-Pack",
@@ -95,16 +96,16 @@ export default function Example() {
     getProduct();
   }, []);
 
-  const [quantity, setQuantity] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   const handleIncrement = () => {
-    if (quantity <= 10) {
-        setQuantity(quantity + 1);
-      }
+    if(quantity < 10) {
+      setQuantity(quantity + 1);
+    }
   };
 
   const handleDecrement = () => {
-    if (quantity > 0) {
+    if (quantity > 1) {
       setQuantity(quantity - 1);
     }
   };
@@ -113,25 +114,26 @@ export default function Example() {
     e.preventDefault()
 
 
-        const data = {
-            uid:userData.uid,
-            pUid:id,
-            quantity:quantity
-        }
+    const data = {
+      uid: userData.uid,
+      pUid: id,
+      quantity: quantity,
+      update:false
+    }
 
-        console.log(data);
+    console.log(data);
 
-        try {
-            const response = await axios.post(
-                "http://localhost:8000/user/add-cart",data
-            );
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/user/add-cart", data
+      );
 
-            if (response.status === 201) {
-                console.log("added to cart");
-            }
-        } catch (err) {
-            console.log(err);
-        }
+      if (response.status === 201) {
+        console.log("added to cart");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <div className="bg-white">
@@ -255,6 +257,8 @@ export default function Example() {
                   </div>
                 </RadioGroup>
               </div>
+
+              
               {/* Sizes */}
               <div className="mt-10">
                 <div className="flex items-center justify-between">
@@ -335,16 +339,19 @@ export default function Example() {
                   </div>
                 </RadioGroup>
               </div>
-              <p style={{marginTop:"30px"}}>Add Quantity</p>
-              <span onClick={handleDecrement}>-</span>
-              &nbsp;{quantity}&nbsp;
-              <span onClick={handleIncrement}>+</span>
+              <p style={{ marginTop: "30px" }}>Add Quantity</p>
+              <div className="qtyBtn">
+                <span className="qtyBtn" onClick={handleDecrement}>-</span>
+                &nbsp;{quantity}&nbsp;
+                <span className="qtyBtn" onClick={handleIncrement}>+</span>
+              </div>
+
               <button
                 onClick={handleCart}
                 type="submit"
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-gray-900 px-8 py-3 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
-                Buy Now
+                Add To Cart &nbsp; <i class="fa-brands fa-opencart"></i>
               </button>
             </form>
           </div>

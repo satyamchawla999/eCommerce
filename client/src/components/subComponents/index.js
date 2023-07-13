@@ -6,6 +6,8 @@ import ProductItems from "./ProductItems";
 import ProductPage from "./ProductPage";
 import Address from "./Address";
 import AddressItems from "./AddressItems"
+import CartItems from "./CartItems";
+import CartInfoSection from "./CartInfoSection";
 
 export {
     Header,
@@ -15,5 +17,7 @@ export {
     ProductItems,
     ProductPage,
     Address,
-    AddressItems
+    AddressItems,
+    CartItems,
+    CartInfoSection
 }
