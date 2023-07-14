@@ -7,9 +7,11 @@ import "../../assets/styles/products.css";
 import axios from "axios";
 
 const Products = (props) => {
-  const { draft,display } = props;
+  const { draft,display,type } = props;
   const userData = useSelector((state) => state.userData);
   const [products, setProducts] = useState([]);
+  const [orders,setOrders] = useState([]);
+
   const [deleteProduct, setDeleteProduct] = useState(false);
 
   useEffect(() => {
@@ -26,7 +28,27 @@ const Products = (props) => {
         console.log(err);
       }
     };
-    getProducts();
+
+    const getOrders = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/order/get-orders"
+        );
+
+        if (response.status === 201) {
+          setOrders(response.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    if(type === "orders") {
+      getOrders();
+    } else {
+      getProducts();
+    }
+    
   }, [deleteProduct]);
 
   return (
@@ -35,13 +57,15 @@ const Products = (props) => {
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-10 lg:max-w-7xl lg:px-8">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">{display}</h2>
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {products.map(
+
+            {type !== "orders" && products.map(
               (product) =>
                 product?.vUid === userData.uid && (draft === false ?
                   product?.draft === false && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} /> :
                   product?.draft === true && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} />
                 )
             )}
+            
           </div>
         </div>
       </div>

@@ -5,11 +5,12 @@ let Product = require("../Model/products");
 module.exports.signUp = async (req, res) => {
 
   try {
-    let user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ uid: req.body.uid });
 
     if (!user) {
       user = await User.create(req.body);
-      return res.status(201).send("User Created Successfully!");
+      user = await User.findOne({ uid: req.body.uid });
+      return res.status(201).send(user);
     } else {
       if (req.body.authProvider === "Google") {
         return res.status(201).send(user);
@@ -56,10 +57,34 @@ module.exports.addAddress = async (req, res) => {
       { $push: { address: req.body } },
       { new: true }
     );
-    console.log("user", user);
     if (user) {
-      console.log(user);
       return res.status(201).send(user.address);
+    } else {
+      res.statusMessage = "User Not Found";
+      return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the user.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.deleteItems = async (req, res) => {
+  try {
+    let user = await User.findOne({ uid: req.body.uid },);
+    if (user) {
+
+      if(req.body.type === "address") {
+        user.address.splice(req.body.index,1);
+        user.markModified('address');
+      } else {
+        user.cart.splice(req.body.index,1);
+        user.markModified('cart');
+      }
+      
+      await user.save();
+      return res.status(201).send("deleted");
     } else {
       res.statusMessage = "User Not Found";
       return res.status(409).end();
@@ -129,11 +154,6 @@ module.exports.addCart = async (req, res) => {
   }
 };
 
-
-
-
-
-
 module.exports.getCartItems = async (req, res) => {
   const { uid } = req.body;
   try {
@@ -162,6 +182,51 @@ module.exports.getCartItems = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.statusMessage = "An error occurred while finding cart items.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.setUserRole = async (req, res) => {
+  const { uid, role } = req.body;
+  try {
+    let user = await User.findOne({ uid: uid });
+
+    if (user) {
+
+      user.role = role;
+      user.markModified('role');
+      await user.save();
+
+      return res.status(201).send(user.role);
+    } else {
+      res.statusMessage = "User Not Found";
+      return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while finding cart items.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.emptyCart = async (req, res) => {
+  const { uid} = req.body;
+  try {
+    let user = await User.findOne({ uid: uid });
+
+    if (user) {
+
+      user.cart = [];
+      user.markModified('cart');
+      await user.save();
+
+      return res.status(201).send("delete");
+    } else {
+      return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred in deleting cart items.";
     return res.status(500).end();
   }
 };

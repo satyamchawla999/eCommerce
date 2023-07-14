@@ -1,3 +1,19 @@
+.roleSelector {
+    position: absolute;
+    height: 200px;
+    width: 400px;
+
+    background-color: rgb(236, 235, 235);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    top: 40%;
+    left: 40%;
+    z-index: 10;
+}
+
 .mostTrending {
     font-size: 50px;
     width: 100%;

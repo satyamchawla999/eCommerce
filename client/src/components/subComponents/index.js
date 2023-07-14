@@ -8,6 +8,8 @@ import Address from "./Address";
 import AddressItems from "./AddressItems"
 import CartItems from "./CartItems";
 import CartInfoSection from "./CartInfoSection";
+import UpdateProfile from "./UpdateProfile";
+import Orders from "./Orders";
 
 export {
     Header,
@@ -19,5 +21,7 @@ export {
     Address,
     AddressItems,
     CartItems,
-    CartInfoSection
+    CartInfoSection,
+    UpdateProfile,
+    Orders
 }

@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { Home, Signin, Signup, Profile } from "./";
 import { Header, ProductPage } from "./subComponents";
 import Cart from "./Cart"
+import CheckoutPage from "./CheckoutPage";
 
 const Page404 = () => {
   return <h1>404 not found</h1>;
@@ -27,6 +28,7 @@ const Main = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/productpage/:id" element={<ProductPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/cart" element={<Cart />} />
 
 

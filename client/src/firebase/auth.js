@@ -18,11 +18,10 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-const signInWithGoogle = async (role) => {
+const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
     const user = res.user;
-    console.log(user);
 
     const data = {
       uid: user.uid,
@@ -30,7 +29,7 @@ const signInWithGoogle = async (role) => {
       email: user.email,
       password: "123",
       imgUrl: user.photoURL,
-      role: role,
+      role:"0",
       authProvider: "Google",
     };
 
@@ -40,7 +39,7 @@ const signInWithGoogle = async (role) => {
     );
 
     if (response.status === 201) {
-      return response.data;
+      return response;
     } else {
       return;
     }

@@ -1,8 +1,9 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { notification, Radio } from "antd";
 import { ProductItems } from "./subComponents";
-import { notification } from "antd";
+import { setUserData,setUser } from "../features/user/userSlice";
+import { useSelector,useDispatch } from "react-redux";
 import "../assets/styles/home.scss"
 
 const callouts = [
@@ -32,9 +33,16 @@ const callouts = [
 const Home = () => {
   const userData = useSelector((state) => state.userData);
   const [products, setProducts] = useState([]);
+  console.log("products",products);
   const [api, contextHolder] = notification.useNotification();
+  const [role, setRole] = useState("0");
+
+  const dispatch = useDispatch();
+
 
   useEffect(() => {
+    console.log("new data",products);
+
     const getProducts = async () => {
       try {
         const response = await axios.get(
@@ -48,12 +56,57 @@ const Home = () => {
         console.log(err);
       }
     };
+
+    
     getProducts();
-  }, []);
+
+  }, [role]);
+
+  const onChange = async (e) => {
+
+    console.log("radio checked", e.target.value);
+
+    const data = {
+      role: e.target.value,
+      uid: userData?.uid,
+    }
+
+    try {
+
+      const response = await axios.post(
+        "http://localhost:8000/user/set-user-role", data
+      );
+
+      if (response.status === 201) {
+        const data = {...userData,role:response.data}
+        // console.log("new data",products);
+        dispatch(setUser());
+        dispatch(setUserData(data));
+        
+        setRole(e.target.value);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+    
+  };
 
   return (
     <>
-    {contextHolder}
+      {userData?.role === "0" && <div className="roleSelector">
+        Select role to proceed further
+        <Radio.Group
+          className="radio"
+          name="role"
+          onChange={onChange}
+          value={role}
+        >
+          <Radio value={"Customer"}>Customer</Radio>
+          <Radio value={"Vendor"}>Vendor</Radio>
+        </Radio.Group>
+      </div>}
+
+      {contextHolder}
       <div className="bg-white-100">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0">
           <div className="mx-auto max-w-2xl py-16 sm:py-0 lg:max-w-none lg:py-10">
@@ -89,9 +142,10 @@ const Home = () => {
       <div className="bg-white">
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {products.map((product) => (
+            {products  && products?.map((product) => (
               product.vUid !== userData.uid && product.draft === false && <ProductItems product={product} />
             ))}
+  
           </div>
         </div>
       </div>

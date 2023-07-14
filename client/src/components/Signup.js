@@ -17,7 +17,7 @@ const Signup = () => {
 
   const user = useSelector((state) => state.user);
 
-  const [role, setRole] = useState(0);
+  const [role, setRole] = useState("0");
   const [api, contextHolder] = notification.useNotification();
   const Navigate = useNavigate();
   const dispatch = useDispatch();
@@ -38,16 +38,11 @@ const Signup = () => {
 
 
   const authRegistration = async () => {
-    if (role === 0) {
-      openNotificationWithIcon("error", "Please choose role");
-      return;
-    }
+    const response = await signInWithGoogle();
 
-    const response = await signInWithGoogle(role);
-
-    if (response) {
+    if (response?.status === 201) {
       dispatch(setUser());
-      dispatch(setUserData(response));
+      dispatch(setUserData(response.data));
       Navigate("/");
       return openNotificationWithIcon("success", "Sign in successfull!");
     }

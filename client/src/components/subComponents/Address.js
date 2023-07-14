@@ -31,20 +31,17 @@ const Address = (props) => {
     const handleSubmit = async (e) => {
 
         e.preventDefault()
-
-        const target = e.target;
+        const {hno,street,landmark,city,state,pincode} = e.target
 
         const data = {
             uid: userData.uid,
-            hno: target.hno.value,
-            street: target.street.value,
-            landmark: target.landmark.value,
-            city: target.city.value,
-            state: target.state.value,
-            pincode: target.pincode.value,
+            hno: hno.value,
+            street: street.value,
+            landmark: landmark.value,
+            city: city.value,
+            state: state.value,
+            pincode: pincode.value,
         }
-
-        console.log(data);
 
         try {
             const response = await axios.post(
@@ -57,7 +54,30 @@ const Address = (props) => {
         } catch (err) {
             console.log(err);
         }
+
+        hno.value = ""
+        street.value = ""
+        landmark.value = ""
+        city.value = ""
+        state.value = ""
+        pincode.value = "" 
     };
+
+    const handleDelete = async (e,index) => {
+        e.stopPropagation();
+        try {
+            const response = await axios.post(
+                "http://localhost:8000/user/delete-items", {uid:userData.uid,index:index,type:"address"}
+            );
+
+            if (response.status === 201) {
+                console.log(response.data)
+                setNewAddress(!newAddress);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    }
 
 
     return (
@@ -65,7 +85,7 @@ const Address = (props) => {
             <div className="address">
 
                 <form onSubmit={handleSubmit}>
-                    <h2 className="text-2xl mb-10 font-bold tracking-tight text-gray-900">Add {display}</h2>
+                    <h2 className="text-2xl mb-10 font-bold tracking-tight text-gray-900">{display}</h2>
 
                     <label>House No.</label>
                     <input name="hno" type="text" required />
@@ -85,8 +105,8 @@ const Address = (props) => {
                     </button>
                 </form>
 
-                <div className="addressItemContainer">
-                    {address?.map((item, index) => <AddressItems key={item.uid} item={item} number={index} />)}
+                <div className="addressItemContainer" style={{overflowY:"scroll"}}>
+                    {address?.map((item, index) => <AddressItems key={index} item={item} number={index} handleDelete={handleDelete}/>)}
                 </div>
             </div>
         </>

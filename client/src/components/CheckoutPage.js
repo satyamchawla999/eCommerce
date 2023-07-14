@@ -2,22 +2,23 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { CartItems, CartInfoSection } from "./subComponents";
 import axios from "axios";
-import "../assets/styles/cart.scss"
+import "../assets/styles/cart.scss";
+import { useLocation } from "react-router-dom";
 
-const Cart = () => {
+const CheckoutPage = () => {
+  const [couponData, setCouponData] = useState(useSelector((state) => state.coupon))
+
   const userData = useSelector((state) => state.userData);
-  const [couponData,setCouponData] = useState("")
-
-
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
   const [cartQuantity, setCartQuantity] = useState(false);
   const [delivery, setDelivery] = useState(200);
   const [discount, setDiscount] = useState(0);
-  const [total, setTotal] = useState(discount + delivery + cartTotal)
+  const [total, setTotal] = useState((delivery + cartTotal) - discount);
   const [cartInfo, setCartInfo] = useState(false);
+  const { state } = useLocation();
+  console.log("state", state);
 
-  const page = "cart"
 
   let Coupon = useRef(null)
   useEffect(() => {
@@ -42,20 +43,19 @@ const Cart = () => {
             return { sum, quantity };
           }
 
-          let details = getDetails();
+          let details = getDetails()
 
           setCartItems(response.data);
           setCartTotal(details?.sum);
-          const d = details?.sum*0.25
-          if(couponData === "FREEDEL") {
+          if (couponData === "FREEDEL") {
             setDelivery(0)
-            setTotal(0 + details?.sum)
-          } else if(couponData === "EPIC") {
-            
+            setTotal(discount + 0 + details?.sum)
+          } else if (couponData === "EPIC") {
+            const d = details?.sum * 0.25
             setDiscount(d);
-            setTotal((details?.sum-d)+200)
+            setTotal((details?.sum - d) + 200)
           } else {
-            setTotal((delivery + details?.sum)-discount)
+            setTotal((delivery + details?.sum) - discount)
           }
 
           setCartInfo(true)
@@ -110,40 +110,35 @@ const Cart = () => {
     }
   }
 
-  // const handleCoupon = () => {
-  //   const value = Coupon.current.value;
-  //   if (value === "FREEDEL") {
-  //     setDelivery(0);
-  //   }
-
-  //   if (value === "EPIC") {
-  //     setDiscount(total * 0.25);
-  //   }
-  // }
 
   return (
     <div className="cart">
-      <p className="heading">CART</p>
+      <p className="heading">Checkout</p>
+
 
       <div className="cartContainer">
         <div className="cartItemSection">
           {cartItems.length === 0 && <div className="emptyCart"><img src="https://shop.millenniumbooksource.com/static/images/cart1.png"></img></div>}
           {cartItems.map((item, index) => (
-            <CartItems page={"cart"} key={index} item={item} handleQuantityChange={handleQuantityChange} handleItemDelete={handleItemDelete} />))
+            <CartItems page="checkout" key={index} item={item} handleQuantityChange={handleQuantityChange} handleItemDelete={handleItemDelete} />))
           }
         </div>
 
-        <>
         {cartInfo === true && <CartInfoSection
-            cartTotal={cartTotal}
-            discount={discount}
-            delivery={delivery}
-            total={total}
-            Coupon={Coupon}
-            setTotal={setTotal}
-            setCouponData={setCouponData}
-            page="cart"
-          />}
+          cartItems={cartItems}
+          cartTotal={cartTotal}
+          discount={discount}
+          delivery={delivery}
+          total={total}
+          Coupon={Coupon}
+          setTotal={setTotal}
+          item={state}
+          page="checkout"
+          couponData={couponData}
+          setCouponData={setCouponData}
+        />}
+        <>
+
         </>
 
       </div>
@@ -151,6 +146,6 @@ const Cart = () => {
 
     </div>
   );
-};
+}
 
-export default Cart;
+export default CheckoutPage

@@ -31,11 +31,11 @@ const Signin = () => {
   const authRegistration = async () => {
     const response = await signInWithGoogle();
 
-    if (response) {
+    if (response?.status === 201) {
       dispatch(setUser());
-      dispatch(setUserData(response));
-      openNotificationWithIcon("success", "Sign in successfull!");
+      dispatch(setUserData(response.data));
       Navigate("/");
+      return openNotificationWithIcon("success", "Sign in successfull!");
     }
   };
 

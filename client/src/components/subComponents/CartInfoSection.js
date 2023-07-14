@@ -1,41 +1,115 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
+import { useSelector } from "react-redux";
+import { Modal } from "antd";
+import Address from "./Address";
+import AddressItems from './AddressItems';
+import { setCoupon } from "../../features/user/userSlice";
+import { useDispatch } from 'react-redux';
+import axios from 'axios';
+
+
 
 const CartInfoSection = (props) => {
-    const { cartTotal, Coupon, total, setTotal } = props
+    const userData = useSelector((state) => state.userData)
+    const { cartTotal, Coupon, total, page, item, couponData, setCouponData } = props
+
+    const dispatch = useDispatch()
+    // const [couponData,setCouponData] = useState(useSelector((state) => state.coupon))
 
     const [orderTotal, setOrderTotal] = useState(0)
     const [delivery, setDelivery] = useState(props.delivery);
     const [discount, setDiscount] = useState(props.discount);
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+    const showModal = () => setIsModalOpen(true);
+    const handleOk = () => setIsModalOpen(false);
+    const handleCancel = () => setIsModalOpen(false);
+
     useEffect(() => {
-        // setTotal(total+delivery-(discount));
-        // console.log("hello")
         setOrderTotal(total)
-    }, [total,Coupon]);
+    }, [total, Coupon]);
 
     const handleCoupon = () => {
-
-        // console.log("hello")
-
 
         const value = Coupon.current.value;
         let discount = props.discount;
         let delivery = props.delivery
         if (value === "FREEDEL") {
+            const data = { coupon: "FREEDEL" }
+            dispatch(setCoupon(data));
+            setDiscount(0);
             setDelivery(0);
             delivery = 0;
+            discount = 0;
         }
 
         if (value === "EPIC" && cartTotal >= 2589) {
+            const data = { coupon: "EPIC" }
+            dispatch(setCoupon(data));
             setDiscount(total * 0.25);
+            setDelivery(200);
             discount = total * 0.25;
         }
 
         setOrderTotal(cartTotal + delivery - (discount))
 
+    }
 
+    const handleBuy = async () => {
 
-        // setTotal(total+delivery-(discount))
+        try {
+            let cartItems = props.cartItems;
+            cartItems.forEach((value) => {
+                const product = value.product
+                const data = {
+                    pUid: product.uid,
+                    vUid: product.vUid,
+                    cUid: userData.uid,
+                    address: item,
+                    status: "Successfull",
+                    coupon: couponData
+                }
+                console.log("product", data)
+
+                const addOrder = async () => {
+                    try {
+                        const response = await axios.post(
+                            "http://localhost:8000/order/add-order", data
+                        );
+
+                        if (response.status === 201) {
+                            console.log("added to cart");
+                        }
+                    } catch (err) {
+                        console.log(err)
+                    }
+                }
+
+                addOrder();
+
+                const emptyCart = async () => {
+                    try {
+                        const response = await axios.post(
+                            "http://localhost:8000/user/empty-cart", {uid:userData.uid}
+                        );
+
+                        if (response.status === 201) {
+                            console.log("added to cart");
+                        }
+                    } catch (err) {
+                        console.log(err)
+                    }
+                }
+
+                emptyCart();
+
+            })
+        } catch (err) {
+            console.log(err)
+        }
+
     }
 
 
@@ -63,16 +137,29 @@ const CartInfoSection = (props) => {
                 <p>{orderTotal} Rs</p>
             </div>
 
-            <div className="orderDetailItems">
-                <input name="applyCoupon" placeholder="Apply Coupon" ref={Coupon} />
+            {page !== "checkout" && <div className="orderDetailItems">
+                <input name="applyCoupon" placeholder="Apply Coupon" onChange={(e) => setCouponData(e.target.value)} value={couponData} ref={Coupon} />
                 <button onClick={handleCoupon}>Apply</button>
-            </div>
+            </div>}
 
-            <div className="orderDetailItems">
-                <button className="buyButton">Proceed to Buy</button>
-            </div>
+            {page !== "checkout" ?
+                <div className="orderDetailItems">
+                    <button className="buyButton" onClick={showModal}>Proceed to Buy</button>
+                </div> : <div className="orderDetailItems" onClick={handleBuy}>
+                    <button className="buyButton" >Checkout</button>
+                </div>
+            }
+            <Modal
+                open={isModalOpen}
+                onOk={handleOk}
+                onCancel={handleCancel}
+                footer={[]}
+                width={1000}
+            >
+                <Address display={"Select Address To Proceed"} />
+            </Modal>
 
-            <div className="offers">
+            {page !== "checkout" ? <div className="offers">
                 <p className="offerHeading">Latest Offers</p>
                 <div>
                     <p>FREEDEL</p>
@@ -82,7 +169,14 @@ const CartInfoSection = (props) => {
                     <p>EPIC</p>
                     <p className="desc">Extra Upto 25% Off on 2589</p>
                 </div>
-            </div>
+            </div> : <>
+                <div className='offers'>
+
+                    <p className="offerHeading" >Address</p>
+                    <AddressItems item={item} page={"checkout"} />
+                </div>
+
+            </>}
 
         </div>
     )
