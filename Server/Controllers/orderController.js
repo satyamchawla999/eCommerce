@@ -25,8 +25,19 @@ module.exports.addOrder = async (req, res) => {
     }
 }
 
+module.exports.cancelOrder = async (req, res) => {
+    try {
+        await Order.findByIdAndDelete({_id:req.body._id});
+        return res.status(201).send("order cancel");
+    } catch (err) {
+        console.error(err);
+        res.statusMessage = "An error occurred in deleting cart items.";
+        return res.status(500).end();
+    }
+}
+
 module.exports.getOrders = async (req, res) => {
-    const {role,uid} = req.body;
+    const {role,uid,display} = req.body;
 
     try {
         let orders = [];
@@ -38,6 +49,9 @@ module.exports.getOrders = async (req, res) => {
         } 
         if (role === "Admin") {
             orders = await Order.find({});
+        }
+        if(display === "Your Orders"){
+            orders = await Order.find({cUid:uid});
         }
         return res.status(201).send(orders);
     } catch (err) {

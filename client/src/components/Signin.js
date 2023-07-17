@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState, useEffect, useRef } from "react";
 import { notification } from "antd";
 import { signInWithGoogle, logInWithEmailAndPassword } from "../firebase/auth";
-
 import { setUserData, setUser } from "../features/user/userSlice";
 import { useSelector, useDispatch } from "react-redux";
 
@@ -14,7 +13,6 @@ const Signin = () => {
   const user = useSelector((state) => state.user);
 
   const [api, contextHolder] = notification.useNotification();
-  const Navigate = useNavigate();
   const dispatch = useDispatch();
   const [value, setValue] = useState("");
   const inputRef = useRef(null);

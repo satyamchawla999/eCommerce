@@ -9,8 +9,8 @@ module.exports.getUsers = async (req, res) => {
     if (users) {
       return res.status(201).send(users);
     } else {
-        res.statusMessage = "User Already Exists";
-        return res.status(409).end();
+      res.statusMessage = "User Already Exists";
+      return res.status(409).end();
     }
   } catch (err) {
     console.error(err);
@@ -31,8 +31,8 @@ module.exports.validateVendor = async (req, res) => {
       console.log(user.validation);
       return res.status(201).send("success");
     } else {
-        res.statusMessage = "error";
-        return res.status(409).end();
+      res.statusMessage = "error";
+      return res.status(409).end();
     }
   } catch (err) {
     console.error(err);
@@ -51,13 +51,13 @@ module.exports.signUp = async (req, res) => {
       return res.status(201).send(user);
     } else {
       if (req.body.authProvider === "Google") {
-        if(user.validation === true) {
+        if (user.validation === true) {
           return res.status(201).send(user);
         } else {
           res.statusMessage = "Your Account is Disabled";
           return res.status(204).end();
         }
-        
+
       } else {
         res.statusMessage = "User Already Exists";
         return res.status(409).end();
@@ -82,7 +82,7 @@ module.exports.signIn = async (req, res) => {
     }
 
     if (user && user.password === password) {
-      if(user.validation === true) {
+      if (user.validation === true) {
         return res.status(201).send(user);
       } else {
         res.statusMessage = "Your Account is Disabled";
@@ -274,25 +274,62 @@ module.exports.emptyCart = async (req, res) => {
 
 module.exports.updateProfile = async (req, res) => {
   const files = req.files;
+
+  if (req.body.password === "" || req.body?.newPassword === "") {
+    delete req.body["password"];
+    delete req.body["newPassword"];
+  }
+
   try {
-    let user = await User.findOne({ uid: req.body.uid });
-    if (user) {
-      let imgUrl = [
-        files?.image1 ? files?.image1[0]?.filename : user.imgUrl[0],
-        files?.image2 ? files?.image2[0]?.filename : user.imgUrl[1],
-      ];
+    let phoneFound = await User.findOne({ phone: req.body.phone, uid: { $ne: req.body.uid }});
+    let emailFound = await User.findOne({ email: req.body.email, uid: { $ne: req.body.uid }});
 
-      const updatedData = { ...req.body, imgUrl: imgUrl };
-      const mergedData = { ...user.toObject(), ...updatedData };
-      Object.assign(user, mergedData);
-      const savedData = await user.save();
-      console.log(savedData);
+    if (phoneFound || emailFound) {
 
-      return res.status(201).send(savedData);
+      const newData = {
+        user: {},
+        message: "Existed!"
+      }
+
+      return res.status(201).send(newData);
+
     } else {
+      let user = await User.findOne({ uid: req.body.uid });
+      console.log(req.body)
+      if (user) {
+
+        let imgUrl = [
+          files?.image1 ? files?.image1[0]?.filename : user.imgUrl[0],
+          files?.image2 ? files?.image2[0]?.filename : user.imgUrl[1],
+        ];
+
+        let message = "updated";
+        if (user.password !== "NA" && user.password === req.body?.password) {
+          req.body.password = req.body?.newPassword;
+          delete req.body["newPassword"];
+        }
+
+        if (user.password !== req.body?.password && req.body?.password) {
+          message = "Password not matched!"
+        }
+
+        const updatedData = { ...req.body, imgUrl: imgUrl };
+        const mergedData = { ...user.toObject(), ...updatedData };
+        Object.assign(user, mergedData);
+        const savedData = await user.save();
+        
+        const newData = {
+          user: savedData,
+          message: message
+        }
+
+        return res.status(201).send(newData);
+      } else {
         res.statusMessage = "Error";
         return res.status(409).end();
+      }
     }
+
   } catch (err) {
     console.error(err);
     res.statusMessage = "An error occurred while creating the user.";

@@ -15,7 +15,7 @@ function Orders(props) {
       try {
         const response = await axios.post(
           "http://localhost:8000/order/get-orders",
-          { role: userData.role, uid: userData.uid }
+          { role: userData.role, uid: userData.uid, display:display }
         );
 
         if (response.status === 201) {
@@ -50,6 +50,23 @@ function Orders(props) {
     }
   };
 
+  const handleCancel = async (id) => {
+    console.log(id)
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/order/cancel-order",
+        {_id:id}
+      );
+
+      if (response.status === 201) {
+        console.log("order cancel");
+        setChange(!change);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  } 
+
   return (
     <div className="order">
       <h2 className="text-2xl font-bold tracking-tight text-gray-900">
@@ -67,12 +84,14 @@ function Orders(props) {
               (item, index) =>
                 (userData.uid === item.cUid ||
                 userData.uid === item.vUid ||
-                userData.role === "Admin") && (
+                userData.role === "Admin" ) && (
                   <CartItems
                     page={"orders"}
                     key={index}
                     item={item}
                     handleStatusChange={handleStatusChange}
+                    display={display}
+                    handleCancel={handleCancel}
                   />
                 ))
             )

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import {
   AddProductForm,
@@ -16,7 +16,9 @@ import { getUserImages } from "../Utils/constant";
 const Profile = () => {
   const userData = useSelector((state) => state.userData);
   const [img, image] = useState(getUserImages(userData));
-  const [display, setDisplay] = useState("Profile");
+
+  const {state} = useLocation();
+  const [display, setDisplay] = useState(state ? state : "Profile");
 
   const handleDisplay = (value) => {
     setDisplay(value);
@@ -45,9 +47,8 @@ const Profile = () => {
         {userData.role !== "Customer" && (
           <>
             <div
-              className={`profileInfoItems ${
-                display === "Your Products" && toggel
-              }`}
+              className={`profileInfoItems ${display === "Your Products" && toggel
+                }`}
               onClick={() => handleDisplay("Your Products")}
             >
               Your Products
@@ -67,22 +68,28 @@ const Profile = () => {
         >
           Address
         </div>
-        <div
+        {userData.role !== "Customer" && <div
           className={`profileInfoItems ${display === "Orders" && toggel}`}
           onClick={() => handleDisplay("Orders")}
         >
           Orders
-        </div>
+        </div>}
         {userData.role === "Admin" && (
           <div
-            className={`profileInfoItems ${
-              display === "Vendor List" && toggel
-            }`}
+            className={`profileInfoItems ${display === "Vendor List" && toggel
+              }`}
             onClick={() => handleDisplay("Vendor List")}
           >
             Vendor List
           </div>
         )}
+
+        <div
+          className={`profileInfoItems ${display === "Your Orders" && toggel}`}
+          onClick={() => handleDisplay("Your Orders")}
+        >
+          Your Orders
+        </div>
       </div>
 
       <div className="profileProductSection">
@@ -98,9 +105,9 @@ const Profile = () => {
         )}
         {display === "Your Products" && (
           <>
-            {userData.role !== "Customer" && <AddProductForm />}
+            {userData.role !== "Customer" && <AddProductForm draft={false} display={display} />}
 
-            <Products draft={false} display={display} />
+            {/* <Products draft={false} display={display} /> */}
           </>
         )}
         {display === "Draft" && (
@@ -116,6 +123,11 @@ const Profile = () => {
         {display === "Vendor List" && (
           <>
             <VendorList display={display} />
+          </>
+        )}
+        {display === "Your Orders" && (
+          <>
+            <Orders display={display} />
           </>
         )}
       </div>

@@ -11,22 +11,23 @@ import "../../assets/styles/header.scss";
 
 const Header = () => {
   const user = useSelector((state) => state.user);
-  const [userData,setUserData] = useState(useSelector((state) => state.userData))
+  const [userData, setUserData] = useState(useSelector((state) => state.userData))
   const [img, setImg] = useState(getUserImages(userData));
-  const [subMenu,setSubMenu] = useState(false);
-  const [subMenuWomen,setSubMenuWomen] = useState(false);
+  const [subMenu, setSubMenu] = useState(false);
+  const [subMenuWomen, setSubMenuWomen] = useState(false);
   const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
 
-  useEffect(()=>{
+  useEffect(() => {
     setImg(getUserImages(userData))
-  },[])
+  }, [])
 
   const handleLogOut = async () => {
     await logout();
     dispatch(deleteUser());
+    navigate("/signup")
   };
 
   const handleClick = async (category, subCategory) => {
@@ -34,19 +35,24 @@ const Header = () => {
       category: category,
       subCategory: subCategory,
     };
-  
+
     navigate(
       {
         pathname: "/productcollection"
-        
-      },{
-        state: data
-      }
+
+      }, {
+      state: data
+    }
     );
-  
+
     window.location.reload(); // Perform a full page reload
   };
-  
+
+  const handleNavigate = (state) => {
+    navigate({ pathname: "/profile" }, { state: state })
+    window.location.reload(); // Perform a full page reload
+  }
+
 
   return (
     <div className="header">
@@ -59,24 +65,28 @@ const Header = () => {
       </div>
 
       <div className="mid">
-        <img
-          src="https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"
-          alt="#"
-        />
+        <Link className="homeLink" to="/">
+          <img
+            src="https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"
+            alt="#"
+          />
+        </Link>
+
       </div>
 
       <div className="right">
+
+        <img src={require("../../assets/images/heart.png")} alt="#" />
+        <img src={require("../../assets/images/search.png")} alt="#" />
+        <Link to="/cart">
+          <img src={require("../../assets/images/shopping-bag.png")} alt="#" />
+        </Link>
         <Link to="/profile">
           <img
             style={{ width: "30px", height: "30px" }}
             src={require("../../assets/images/account.png")}
             alt="#"
           />
-        </Link>
-        <img src={require("../../assets/images/heart.png")} alt="#" />
-        <img src={require("../../assets/images/search.png")} alt="#" />
-        <Link to="/cart">
-          <img src={require("../../assets/images/shopping-bag.png")} alt="#" />
         </Link>
       </div>
 
@@ -134,14 +144,20 @@ const Header = () => {
                       <div className="flex h-full flex-col overflow-y-scroll bg-white py-6 shadow-xl">
                         <div className="px-4 sm:px-6">
                           <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
-                            <div className="userInfoSideBar">
-                              <img src={img.image1} alt="" />
-                              <p>{userData.name}</p>
-                            </div>
+                            <Link to="/profile">
+                              <div className="userInfoSideBar">
+                                <img src={img.image1} alt="" />
+                                <p>{userData.name}</p>
+                              </div>
+                            </Link>
                           </Dialog.Title>
                         </div>
                         <div className="relative mt-6 flex-1 px-4 sm:px-6">
                           {/* Your content */}
+                          <div className="sideBarItems" onClick={() => handleNavigate("Profile")}>
+                            Profile
+                            <i className="fa-regular fa-user"></i>
+                          </div>
                           <Link className="sideBarItems" to="/">
                             Home{" "}
                             <i className="fa-solid fa-house"></i>
@@ -150,36 +166,44 @@ const Header = () => {
                             Cart{" "}
                             <i className="fa-brands fa-opencart"></i>
                           </Link>
-                          <div className="sideBarItems">
+                          <div className="sideBarItems" onClick={() => handleClick("", "")}>
                             New Arrivals
                             <i>New</i>
                           </div>
-                          <div className="sideBarItems" onClick={()=>setSubMenu(!subMenu)}>
+                          <div className="sideBarItems" onClick={() => setSubMenu(!subMenu)}>
                             Men Collection
                             {subMenu ? (<i class="fa-solid fa-minus"></i>) : (<i className="fa-solid fa-plus"></i>)}
                           </div>
                           <div className={subMenu ? "subMenu" : "hideSubMenu"}>
-                            <li onClick={()=>handleClick("male","shirt")}>Shirt</li>
-                            <li onClick={()=>handleClick("male","tshirt")}>T-Shirt</li>
-                            <li onClick={()=>handleClick("male","shoes")}>Shoes</li>
-                            <li onClick={()=>handleClick("male","jeans")}>Jeans</li>
+                            <li onClick={() => handleClick("male", "shirt")}>Shirt</li>
+                            <li onClick={() => handleClick("male", "tshirt")}>T-Shirt</li>
+                            <li onClick={() => handleClick("male", "shoes")}>Shoes</li>
+                            <li onClick={() => handleClick("male", "jeans")}>Jeans</li>
                           </div>
-                          <div className="sideBarItems" onClick={()=>setSubMenuWomen(!subMenuWomen)}>
+                          <div className="sideBarItems" onClick={() => setSubMenuWomen(!subMenuWomen)}>
                             Women Collection
                             {subMenuWomen ? (<i class="fa-solid fa-minus"></i>) : (<i className="fa-solid fa-plus"></i>)}
                           </div>
                           <div className={subMenuWomen ? "subMenu" : "hideSubMenu"}>
-                            <li onClick={()=>handleClick("female","shirt")}>Shirt</li>
-                            <li onClick={()=>handleClick("female","tshirt")}>T-Shirt</li>
-                            <li onClick={()=>handleClick("female","shoes")}>Shoes</li>
-                            <li onClick={()=>handleClick("female","jeans")}>Jeans</li>
+                            <li onClick={() => handleClick("female", "shirt")}>Shirt</li>
+                            <li onClick={() => handleClick("female", "tshirt")}>T-Shirt</li>
+                            <li onClick={() => handleClick("female", "shoes")}>Shoes</li>
+                            <li onClick={() => handleClick("female", "jeans")}>Jeans</li>
                           </div>
-                          <button className="sideBarItems button"  onClick={handleLogOut}>
+                          <div className="sideBarItems" onClick={() => handleNavigate("Your Orders")}>
+                            Your Orders
+                            <i>Orders</i>
+                          </div>
+                          <div className="sideBarItems" onClick={() => handleNavigate("Address")}>
+                            Address
+                            <i className="fa-regular fa-address-card"></i>
+                          </div>
+                          <button className="sideBarItems button" onClick={handleLogOut}>
                             Logout{" "}
                             <i className="fa-solid fa-arrow-right-from-bracket"></i>
                           </button>
                           <br></br>
-                          
+
                         </div>
                       </div>
                     </Dialog.Panel>

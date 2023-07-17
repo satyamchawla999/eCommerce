@@ -12,8 +12,14 @@ const ProductItems = (props) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productPage, setProductPage] = useState(false);
   const [info, setInfo] = useState(false);
+  const [options, setOptions] = useState(false);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // setDeleteProduct((prevValues) => !prevValues);
+    console.log("updated")
+  }, [productPage])
 
   const showModal = (e) => {
     e.stopPropagation();
@@ -56,6 +62,14 @@ const ProductItems = (props) => {
     showModal(e);
   };
 
+  const handleOption = (e) => {
+    e.stopPropagation();
+    // setInfo(true);
+    setOptions(!options);
+
+    // showModal(e);
+  };
+
   return (
     <div onClick={handleProductPage} className="handleProduct">
       <div className="group relative">
@@ -92,7 +106,7 @@ const ProductItems = (props) => {
           ) : userData.uid === product.vUid || userData.role === "Admin" ? (
             <>
               <p className="text-sm font-medium">
-                <span>
+                {/* <span>
                   <button
                     className="editIcon"
                     onClick={showModal}
@@ -107,14 +121,58 @@ const ProductItems = (props) => {
                   onClick={handleDelete}
                 >
                   <i className="fa-regular fa-trash-can"></i> Delete
-                </button>
+                </button> */}
 
-                <button
+                {/* <button
                   className="text-green-500 ml-4 editIcon"
                   onClick={handleInfo}
                 >
                   <i class="fa-solid fa-circle-info"></i> Info
+                </button> */}
+
+                <button
+                  className="text-black-500 ml-4 editIcon"
+                  onClick={handleOption}
+                >
+                  Options <i class="fa-solid fa-caret-down"></i>
                 </button>
+
+                {options && <div>
+                  <span>
+                    <button
+                      className="editIcon"
+                      onClick={showModal}
+                      data-name="edit"
+                    >
+                      <i className="fa-solid fa-pen-to-square"></i> Edit
+                    </button>
+                  </span>
+                  <br/>
+                  <span>
+                    <button
+                      className="text-red-500 ml-0 editIcon"
+                      onClick={handleDelete}
+                    >
+                      <i className="fa-regular fa-trash-can"></i> Delete
+                    </button>
+                  </span>
+                  <br/>
+                  <button
+                  className="text-green-500 ml-0 editIcon"
+                  onClick={handleInfo}
+                >
+                  <i class="fa-solid fa-circle-info"></i> Info
+                </button>
+                </div>}
+
+
+                {/* <button
+                  className="text-green-500 ml-4 editIcon"
+                  onClick={handleInfo}
+                >
+                  <i class="fa-solid fa-circle-info"></i> Info
+                </button> */}
+
               </p>
             </>
           ) : (
@@ -149,7 +207,8 @@ const ProductItems = (props) => {
             </div>
           </div>
         ) : (
-          <ModalData product={product} handleCancel={handleCancel} />
+          // <ModalData product={product} handleCancel={handleCancel} setProductPage={setProductPage}/>
+          <ModalData product={product} handleCancel={handleCancel} setProductPage={setProductPage} />
         )}
       </Modal>
     </div>

@@ -86,6 +86,14 @@
                 padding: 20px 20px;
             }
 
+            .cancelButton {
+                text-align: center;
+                border: 1px solid red;
+                color: red;
+                background-color: rgb(242, 224, 224);
+                cursor: pointer;
+            }
+
             .removeContainer {
                 height: 200px;
                 width: 200px;

@@ -7,7 +7,7 @@ import { getValues, getImages } from "../../Utils/constant";
 
 const ModalData = (props) => {
 
-  const { product,handleCancel } = props;
+  const { product,handleCancel,setProductPage } = props;
   const userData = useSelector((state) => state.userData);
 
   const [values, setValues] = useState(getValues(product));
@@ -45,6 +45,7 @@ const ModalData = (props) => {
       console.error("Error submitting form data:", err);
     }
     handleCancel();
+    props?.setProductPageUpdate((prevValues) => !prevValues);
   };
 
   const handleChange = (e) => {

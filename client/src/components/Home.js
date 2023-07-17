@@ -1,9 +1,10 @@
 import axios from "axios";
+import { Modal } from "antd";
 import React, { useEffect, useState } from "react";
 import { notification, Radio } from "antd";
 import { ProductItems } from "./subComponents";
-import { setUserData,setUser } from "../features/user/userSlice";
-import { useSelector,useDispatch } from "react-redux";
+import { setUserData, setUser } from "../features/user/userSlice";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import "../assets/styles/home.scss"
 
@@ -14,7 +15,7 @@ const callouts = [
     imageSrc: require("../assets/images/women.png"),
     imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
     href: '#',
-    value:"female"
+    value: "female"
   },
   {
     name: '',
@@ -22,7 +23,7 @@ const callouts = [
     imageSrc: 'https://i.pinimg.com/originals/c7/09/ac/c709acb1309dfcccc6aa0d67a90a316c.jpg',
     imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
     href: '#',
-    value:"all"
+    value: "all"
   },
   {
     name: '',
@@ -30,23 +31,31 @@ const callouts = [
     imageSrc: require("../assets/images/man.png"),
     imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
     href: '#',
-    value:"male"
+    value: "male"
   },
 ]
 
 const Home = () => {
   const userData = useSelector((state) => state.userData);
   const [products, setProducts] = useState([]);
-  console.log("products",products);
   const [api, contextHolder] = notification.useNotification();
   const [role, setRole] = useState("0");
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+
+  const showModal = () => setIsModalOpen(true);
+  const handleOk = () => setIsModalOpen(false);
+  const handleCancel = () => setIsModalOpen(false);
 
 
   useEffect(() => {
-    console.log("new data",products);
+    console.log("new data", products);
+
+    if (userData.role === "0") {
+      showModal()
+    }
 
     const getProducts = async () => {
       try {
@@ -62,7 +71,7 @@ const Home = () => {
       }
     };
 
-    
+
     getProducts();
 
   }, [role]);
@@ -83,43 +92,56 @@ const Home = () => {
       );
 
       if (response.status === 201) {
-        const data = {...userData,role:response.data}
+        const data = { ...userData, role: response.data }
         // console.log("new data",products);
         dispatch(setUser());
         dispatch(setUserData(data));
-        
+
         setRole(e.target.value);
+        handleCancel()
       }
     } catch (err) {
       console.log(err);
     }
-    
+
   };
 
-  
-  const handleClick = async (value)=>{
+
+  const handleClick = async (value) => {
     // e.stopPropagation();
-    console.log("hey",value);
+    console.log("hey", value);
     const data = {
-      category:value,
+      category: value,
       subCategory: "All"
     }
-    navigate({pathname:"/productcollection"},{state:data})
+    navigate({ pathname: "/productcollection" }, { state: data })
   }
 
   return (
     <>
-      {userData?.role === "0" && <div className="roleSelector">
-        Select role to proceed further
-        <Radio.Group
-          className="radio"
-          name="role"
-          onChange={onChange}
-          value={role}
+      {userData?.role === "0" && <div>
+        <Modal
+          open={isModalOpen}
+          footer={[]}
         >
-          <Radio value={"Customer"}>Customer</Radio>
-          <Radio value={"Vendor"}>Vendor</Radio>
-        </Radio.Group>
+          <div className="roleSelector">
+            <img src="https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547" />
+            <p>Hey! {userData.name}</p>
+
+            <p>Please select role to proceed further</p>
+
+            <Radio.Group
+              className="radio"
+              name="role"
+              onChange={onChange}
+              value={role}
+            >
+              <Radio value={"Customer"}>Customer</Radio>
+              <Radio value={"Vendor"}>Vendor</Radio>
+            </Radio.Group>
+          </div>
+
+        </Modal>
       </div>}
 
       {contextHolder}
@@ -129,7 +151,7 @@ const Home = () => {
 
             <div className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
               {callouts.map((callout) => (
-                <div key={callout.name} className="group relative" onClick={(e)=>handleClick(callout.value)}>
+                <div key={callout.name} className="group relative" onClick={(e) => handleClick(callout.value)}>
                   <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
                     <img
                       src={callout.imageSrc}
@@ -158,10 +180,10 @@ const Home = () => {
       <div className="bg-white">
         <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-0 lg:max-w-7xl lg:px-8">
           <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {products  && products?.map((product) => (
+            {products && products?.map((product) => (
               product.vUid !== userData.uid && product.draft === false && <ProductItems product={product} />
             ))}
-  
+
           </div>
         </div>
       </div>

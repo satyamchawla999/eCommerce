@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { StarIcon } from "@heroicons/react/20/solid";
 import { RadioGroup } from "@headlessui/react";
 import { useParams } from "react-router-dom";
+import { notification } from "antd";
 import { getImages, getValues } from "../../Utils/constant";
 import axios from "axios";
 import "../../assets/styles/productPage.css"
@@ -70,13 +71,20 @@ export default function Example() {
   const [selectedColor, setSelectedColor] = useState(dummyData.colors[0]);
   const [selectedSize, setSelectedSize] = useState(dummyData.sizes[2]);
   const [product, setProduct] = useState({});
-  console.log(product);
   const [img, setImg] = useState({});
-  console.log(img);
+  const [cartUpdate,setCartUpdate] = useState(false)
+  const [api, contextHolder] = notification.useNotification();
+
 
   const userData = useSelector((state) => state.userData);
 
+  const openNotificationWithIcon = (type, message) => {
+    api[type]({
+      message: message,
+    });
+  };
 
+  const [quantity, setQuantity] = useState(1);
   useEffect(() => {
     const getProduct = async () => {
       try {
@@ -93,10 +101,11 @@ export default function Example() {
         console.log(err);
       }
     };
+    setQuantity(1)
     getProduct();
-  }, []);
+  }, [cartUpdate]);
 
-  const [quantity, setQuantity] = useState(1);
+ 
 
   const handleIncrement = () => {
     if(quantity < 10) {
@@ -129,7 +138,8 @@ export default function Example() {
       );
 
       if (response.status === 201) {
-        console.log("added to cart");
+        openNotificationWithIcon("success", "Added to cart");
+        setCartUpdate(!cartUpdate)
       }
     } catch (err) {
       console.log(err);
@@ -137,6 +147,7 @@ export default function Example() {
   };
   return (
     <div className="bg-white">
+            {contextHolder}
       <div className="pt-6">
         {/* Image gallery */}
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">

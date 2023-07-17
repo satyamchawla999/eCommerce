@@ -12,10 +12,21 @@ const CartItems = (props) => {
     key,
     handleItemDelete,
     page,
+    handleCancel
   } = props;
+
+  const getOrderDate = (originalDateTime) => {
+    const dateTime = new Date(originalDateTime);
+    console.log("date",dateTime)
+    return dateTime;
+  };
 
   const [quantity, setQuantity] = useState(item.quantity);
   const userData = useSelector((state) => state.userData);
+  const itemDate = getOrderDate(item.createdAt).toLocaleDateString();
+  const currDate = new Date().getDate();
+  const diffrence = currDate - (new Date(itemDate).getDate())
+  // console.log("diffrence",currDate - (new Date(itemDate).getDate()));
 
   let product = {};
   let address = {};
@@ -30,11 +41,7 @@ const CartItems = (props) => {
   const max = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const status = ["Successful", "Shipped", "Out For Delivery", "Delivered"];
 
-  const getDate = (originalDateTime) => {
-    const dateTime = new Date(originalDateTime);
-    const formattedDate = dateTime.toLocaleDateString();
-    return formattedDate;
-  };
+   
 
   return (
     <div className="cartItems">
@@ -53,7 +60,7 @@ const CartItems = (props) => {
             <br />
             <span>
               Purchased Date :<br />
-              {getDate(item.createdAt)}
+              {itemDate}
             </span>
             <span>
               {userData.role === "Customer" ? "Seller" : "Customer"}:{" "}
@@ -71,12 +78,15 @@ const CartItems = (props) => {
 
       <div className="qtyContainer">
         {page === "orders" && (
-          <span>Price : {product.price * quantity}.00</span>
+          <>
+            <span>Price : {product.price * quantity}.00</span>
+          </>
+
         )}
         <div>
           Quantity :
           {page === "cart" ? (
-            <select style={{border:"none"}}
+            <select style={{ border: "none" }}
               name="quantity"
               onChange={(e) =>
                 handleQuantityChange(e.target.value, product.uid)
@@ -89,7 +99,8 @@ const CartItems = (props) => {
               ))}
             </select>
           ) : (
-            <>{quantity}</>
+            <> {quantity}</>
+
           )}
         </div>
 
@@ -97,12 +108,14 @@ const CartItems = (props) => {
           <>
             <br />
             <br />
-            <br />
-            {userData.role === "Customer" ? (
-              <span style={{border:"none",padding:"0px"}}>{product.status}</span>
+            {userData.role === "Customer" || props?.display === "Your Orders" ? (
+              <>
+                <span style={{ border: "none", padding: "0px" }}>{product.status}</span>
+              </>
+
             ) : (
               <span>
-                <select style={{border:"none",padding:"0px"}}
+                <select style={{ border: "none", padding: "0px" }}
                   name="status"
                   onChange={(e) =>
                     handleStatusChange(e.target.value, product._id)
@@ -121,15 +134,28 @@ const CartItems = (props) => {
       </div>
 
       {page === "orders" ? (
-        <div className="priceContainer" style={{ fontSize: "12px" }}>
-          <p style={{ fontSize: "18px" }}>Address</p>
-          <p>House no : {address.hno}</p>
-          <p>Street : {address.street}</p>
-          <p>Landmark : {address.landmark}</p>
-          <p>City : {address.city}</p>
-          <p>State : {address.state}</p>
-          <p>Pincode : {address.pincode}</p>
-        </div>
+        <>
+          <div className="priceContainer" style={{ fontSize: "12px" }}>
+            <p style={{ fontSize: "18px" }}>Address</p>
+            <p>House no : {address.hno}</p>
+            <p>Street : {address.street}</p>
+            <p>Landmark : {address.landmark}</p>
+            <p>City : {address.city}</p>
+            <p>State : {address.state}</p>
+            <p>Pincode : {address.pincode}</p>
+          </div>
+
+          {props?.display === "Your Orders" && ( diffrence <= 1 && <div className="priceContainer">
+            <span className="cancelButton" onClick={()=>handleCancel(item._id)}>Cancel Product</span>
+          </div>)}
+
+          {props?.display === "Orders" && <div className="priceContainer">
+            <span className="cancelButton" onClick={()=>handleCancel(item._id)}>Cancel Product</span>
+          </div>}
+
+
+        </>
+
       ) : (
         <div className="priceContainer">
           <span>Price : {product.price * quantity}.00</span>

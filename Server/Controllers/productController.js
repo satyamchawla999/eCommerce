@@ -113,7 +113,7 @@ module.exports.addProduct = async (req, res) => {
 
 module.exports.getProduct = async (req, res) => {
   try {
-    let product = await Product.find();
+    let product = await Product.find().sort({"sales":-1});
     if (product !== []) {
       return res.status(201).send(product);
     } else {

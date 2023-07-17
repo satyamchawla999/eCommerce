@@ -6,12 +6,15 @@ import AddressItems from './AddressItems';
 import { setCoupon } from "../../features/user/userSlice";
 import { useDispatch } from 'react-redux';
 import axios from 'axios';
+import { notification } from "antd";
+import { useNavigate } from 'react-router-dom';
+
 
 
 
 const CartInfoSection = (props) => {
     const userData = useSelector((state) => state.userData)
-    const { cartTotal, cartQuantity , Coupon, total, page, item, couponData, setCouponData } = props
+    const { cartTotal, cartQuantity, Coupon, total, page, item, couponData, setCouponData } = props
 
     const dispatch = useDispatch()
     // const [couponData,setCouponData] = useState(useSelector((state) => state.coupon))
@@ -21,6 +24,17 @@ const CartInfoSection = (props) => {
     const [discount, setDiscount] = useState(props.discount);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [api, contextHolder] = notification.useNotification();
+    const navigate = useNavigate();
+
+
+    const openNotificationWithIcon = (type, message) => {
+        api[type]({
+            message: message,
+        });
+    };
+
 
 
     const showModal = () => setIsModalOpen(true);
@@ -64,15 +78,15 @@ const CartInfoSection = (props) => {
             cartItems.forEach((value) => {
                 const product = value.product
                 let sales = product.price * value.quantity;
-                if(couponData === "FREEDEL") sales = sales-200;
-                if(couponData === "EPIC") sales = (sales - (sales*0.25))+200;
+                if (couponData === "FREEDEL") sales = sales - 200;
+                if (couponData === "EPIC") sales = (sales - (sales * 0.25)) + 200;
                 const data = {
-                    imgUrl:product.imgUrl[0],
-                    cName:userData.name,
-                    name:product.name,
-                    description:product.description,
-                    vName:product.vName,
-                    price:product.price,
+                    imgUrl: product.imgUrl[0],
+                    cName: userData.name,
+                    name: product.name,
+                    description: product.description,
+                    vName: product.vName,
+                    price: product.price,
                     pUid: product.uid,
                     vUid: product.vUid,
                     cUid: userData.uid,
@@ -80,8 +94,8 @@ const CartInfoSection = (props) => {
                     status: "Successfull",
                     coupon: couponData,
                     quantity: value.quantity,
-                    sales:sales,
-                    units:value.quantity,
+                    sales: sales,
+                    units: value.quantity,
                 }
                 console.log("product", data)
 
@@ -101,23 +115,30 @@ const CartInfoSection = (props) => {
 
                 addOrder();
 
-                const emptyCart = async () => {
-                    try {
-                        const response = await axios.post(
-                            "http://localhost:8000/user/empty-cart", {uid:userData.uid}
-                        );
 
-                        if (response.status === 201) {
-                            console.log("added to cart");
-                        }
-                    } catch (err) {
-                        console.log(err)
-                    }
-                }
-
-                emptyCart();
 
             })
+
+            const emptyCart = async () => {
+                try {
+                    const response = await axios.post(
+                        "http://localhost:8000/user/empty-cart", { uid: userData.uid }
+                    );
+
+                    if (response.status === 201) {
+                        console.log("added to cart");
+                    }
+                } catch (err) {
+                    console.log(err)
+                }
+            }
+
+            emptyCart();
+            openNotificationWithIcon("success", "Order Placed");
+            // navigate({pathName:"/profile"},{state:"Your Orders"});
+            navigate({pathname:"/profile"},{state:"Your Orders"})
+            // navigate("")
+
         } catch (err) {
             console.log(err)
         }
@@ -127,6 +148,7 @@ const CartInfoSection = (props) => {
 
     return (
         <div className="cartInfoSection">
+             {contextHolder}
             <p className="detailHeading">Order Details</p>
 
             <div className="orderDetailItems">

@@ -37,9 +37,13 @@
         justify-content: center;
         align-items: center;
         
-        img {
+        .homeLink {
             height: 50%;
+            img {
+                height: 100%;
+            }
         }
+        
     }
 
     .right {

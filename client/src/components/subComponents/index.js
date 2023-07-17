@@ -11,6 +11,7 @@ import CartInfoSection from "./CartInfoSection";
 import UpdateProfile from "./UpdateProfile";
 import Orders from "./Orders";
 import VendorList from "./VendorList";
+// import Products from "./Products";
 
 export {
     Header,
@@ -25,5 +26,6 @@ export {
     CartInfoSection,
     UpdateProfile,
     Orders,
-    VendorList
+    VendorList,
+    // Products
 }

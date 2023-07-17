@@ -48,6 +48,7 @@ const UpdateProfile = (props) => {
     const formData = new FormData(e.target);
     console.log(formData);
 
+
     try {
       const response = await axios.post(
         `http://localhost:8000/user/update-profile`,
@@ -57,10 +58,19 @@ const UpdateProfile = (props) => {
         }
       );
       if (response.status === 201) {
-        userData = response.data;
-        dispatch(setUserData(userData));
 
-        openNotificationWithIcon("success", "Profile Updated Successfully!");
+        if (response.data.message === "Existed!") {
+          openNotificationWithIcon("error", "User with same phone number or email already existed");
+        } else {
+          userData = response.data.user;
+          dispatch(setUserData(userData));
+          if (response.data.message !== "updated") {
+            openNotificationWithIcon("error", "Password not matched rest fields are updated!");
+          } else {
+            openNotificationWithIcon("success", "Profile Updated Successfully!");
+          }
+        }
+
       } else {
         openNotificationWithIcon("error", "Please Try Again");
       }
@@ -116,23 +126,23 @@ const UpdateProfile = (props) => {
               accept="image/*"
             />
           </div>
-          {userData.role !== "Customer" ? 
-          <div className="logo">
-            <label htmlFor="image2">
-              <img src={img.image2} alt="#" />
-              <p>Business Logo</p>
-            </label>
-            <input
-              onChange={handleChange}
-              id="image2"
-              type="file"
-              name="image2"
-              accept="image/*"
-            />
-          </div> : <div className="logo">
-          <label>
-              <img src={img.image2} alt="#" />
-            </label>
+          {userData.role !== "Customer" ?
+            <div className="logo">
+              <label htmlFor="image2">
+                <img src={img.image2} alt="#" />
+                <p>Business Logo</p>
+              </label>
+              <input
+                onChange={handleChange}
+                id="image2"
+                type="file"
+                name="image2"
+                accept="image/*"
+              />
+            </div> : <div className="logo">
+              <label>
+                <img src={img.image2} alt="#" />
+              </label>
             </div>
           }
         </div>
@@ -178,6 +188,33 @@ const UpdateProfile = (props) => {
             value={values?.phone}
             onChange={handleValues}
           />
+
+          {userData?.password === "NA" && <> <label>Set Password</label>
+            <input
+              type="password"
+              name="password"
+              value={values?.password}
+              onChange={handleValues}
+            />
+          </>}
+
+          {userData?.password !== "NA" && <> <label>Set Password</label>
+            <input
+              type="password"
+              name="password"
+              value={values?.password}
+              onChange={handleValues}
+              placeholder="Old Password"
+            />
+
+            <input
+              type="password"
+              name="newPassword"
+              value={values?.password}
+              onChange={handleValues}
+              placeholder="New Password"
+            />
+          </>}
 
           {userData.role !== "Customer" && (
             <>
