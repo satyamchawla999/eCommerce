@@ -10,6 +10,7 @@ import { Home, Signin, Signup, Profile } from "./";
 import { Header, ProductPage } from "./subComponents";
 import Cart from "./Cart"
 import CheckoutPage from "./CheckoutPage";
+import ProductCollection from "./subComponents/ProductCollection";
 
 const Page404 = () => {
   return <h1>404 not found</h1>;
@@ -18,6 +19,11 @@ const Page404 = () => {
 const PrivateRoute = ({ children }) => {
   const user = useSelector((state) => state.user);
   return user ? <Navigate to="/" /> : <>{children}</>;
+};
+
+const ProfileRoute = ({ children }) => {
+  const user = useSelector((state) => state.user);
+  return !user ? <Navigate to="/signin" /> : <>{children}</>;
 };
 
 const Main = () => {
@@ -30,6 +36,7 @@ const Main = () => {
           <Route path="/productpage/:id" element={<ProductPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/cart" element={<Cart />} />
+          <Route path="/productcollection" element={<ProductCollection />}/>
 
 
           <Route
@@ -53,7 +60,10 @@ const Main = () => {
           <Route
             path="/profile"
             element={
+              <ProfileRoute>
                 <Profile />
+
+              </ProfileRoute>
             }
           />
 

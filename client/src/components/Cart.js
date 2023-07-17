@@ -2,20 +2,25 @@ import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { CartItems, CartInfoSection } from "./subComponents";
 import axios from "axios";
-import "../assets/styles/cart.scss"
+import "../assets/styles/cart.scss";
+import { setCoupon } from "../features/user/userSlice";
+import { useDispatch } from "react-redux";
 
 const Cart = () => {
   const userData = useSelector((state) => state.userData);
-  const [couponData,setCouponData] = useState("")
+  const [couponData,setCouponData] = useState("");
+
+  const dispatch = useDispatch();
 
 
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
-  const [cartQuantity, setCartQuantity] = useState(false);
+  const [cartQuantity, setCartQuantity] = useState(0);
   const [delivery, setDelivery] = useState(200);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(discount + delivery + cartTotal)
   const [cartInfo, setCartInfo] = useState(false);
+  const [change,setChange] = useState(false)
 
   const page = "cart"
 
@@ -45,6 +50,7 @@ const Cart = () => {
           let details = getDetails();
 
           setCartItems(response.data);
+          setCartQuantity(details.quantity)
           setCartTotal(details?.sum);
           const d = details?.sum*0.25
           if(couponData === "FREEDEL") {
@@ -58,7 +64,8 @@ const Cart = () => {
             setTotal((delivery + details?.sum)-discount)
           }
 
-          setCartInfo(true)
+          setCartInfo(true);
+          dispatch(setCoupon({coupon:couponData}));
 
         }
       } catch (err) {
@@ -67,7 +74,7 @@ const Cart = () => {
     };
 
     getCartItems();
-  }, [cartQuantity]);
+  }, [change]);
 
 
   const handleQuantityChange = async (q, pid) => {
@@ -88,7 +95,7 @@ const Cart = () => {
 
       if (response.status === 201) {
         console.log("added to cart");
-        setCartQuantity(!cartQuantity)
+        setChange(!change)
       }
     } catch (err) {
       console.log(err);
@@ -103,23 +110,13 @@ const Cart = () => {
 
       if (response.status === 201) {
         console.log(response.data);
-        setCartQuantity(!cartQuantity)
+        setChange(!change)
       }
     } catch (err) {
       console.log(err);
     }
   }
 
-  // const handleCoupon = () => {
-  //   const value = Coupon.current.value;
-  //   if (value === "FREEDEL") {
-  //     setDelivery(0);
-  //   }
-
-  //   if (value === "EPIC") {
-  //     setDiscount(total * 0.25);
-  //   }
-  // }
 
   return (
     <div className="cart">
@@ -136,6 +133,7 @@ const Cart = () => {
         <>
         {cartInfo === true && <CartInfoSection
             cartTotal={cartTotal}
+            cartQuantity={cartQuantity}
             discount={discount}
             delivery={delivery}
             total={total}

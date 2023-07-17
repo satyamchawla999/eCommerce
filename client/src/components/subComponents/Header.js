@@ -1,25 +1,52 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { logout } from "../../firebase/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { deleteUser } from "../../features/user/userSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { getUserImages } from "../../Utils/constant";
 
 import "../../assets/styles/header.scss";
 
 const Header = () => {
   const user = useSelector((state) => state.user);
-  const userData = useSelector((state) => state.userData);
-  console.log(userData.imgUrl);
+  const [userData,setUserData] = useState(useSelector((state) => state.userData))
+  const [img, setImg] = useState(getUserImages(userData));
+  const [subMenu,setSubMenu] = useState(false);
+  const [subMenuWomen,setSubMenuWomen] = useState(false);
+  const navigate = useNavigate();
 
   const [open, setOpen] = useState(false);
   const dispatch = useDispatch();
+
+  useEffect(()=>{
+    setImg(getUserImages(userData))
+  },[])
 
   const handleLogOut = async () => {
     await logout();
     dispatch(deleteUser());
   };
+
+  const handleClick = async (category, subCategory) => {
+    const data = {
+      category: category,
+      subCategory: subCategory,
+    };
+  
+    navigate(
+      {
+        pathname: "/productcollection"
+        
+      },{
+        state: data
+      }
+    );
+  
+    window.location.reload(); // Perform a full page reload
+  };
+  
 
   return (
     <div className="header">
@@ -49,15 +76,13 @@ const Header = () => {
         <img src={require("../../assets/images/heart.png")} alt="#" />
         <img src={require("../../assets/images/search.png")} alt="#" />
         <Link to="/cart">
-
-        <img src={require("../../assets/images/shopping-bag.png")} alt="#" />
+          <img src={require("../../assets/images/shopping-bag.png")} alt="#" />
         </Link>
-
       </div>
 
       {user && (
         <Transition.Root show={open} as={Fragment}>
-          <Dialog as="div" className="relative z-10" onClose={setOpen}>
+          <Dialog as="div" className="relative z-0" onClose={setOpen}>
             <Transition.Child
               as={Fragment}
               enter="ease-in-out duration-500"
@@ -92,14 +117,17 @@ const Header = () => {
                         leaveFrom="opacity-100"
                         leaveTo="opacity-0"
                       >
-                        <div className="absolute left-0 top-0 -ml-8 flex pr-2 pt-4 sm:-ml-10 sm:pr-4">
+                        <div className="absolute right-10 top-5 -ml-8 flex pr-2 pt-4 sm:-ml-10 sm:pr-4">
                           <button
                             type="button"
                             className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                             onClick={() => setOpen(false)}
                           >
-                            <span className="sr-only">Close panel</span>
-                            <XMarkIcon className="h-6 w-6" aria-hidden="true" />
+                            <img className="closePanel"
+                              onClick={() => setOpen(!open)}
+                              src={require("../../assets/images/bars.png")}
+                              alt="#"
+                            />
                           </button>
                         </div>
                       </Transition.Child>
@@ -107,22 +135,51 @@ const Header = () => {
                         <div className="px-4 sm:px-6">
                           <Dialog.Title className="text-base font-semibold leading-6 text-gray-900">
                             <div className="userInfoSideBar">
-                              <img src={userData.imgUrl} alt="" />
+                              <img src={img.image1} alt="" />
                               <p>{userData.name}</p>
                             </div>
                           </Dialog.Title>
                         </div>
                         <div className="relative mt-6 flex-1 px-4 sm:px-6">
                           {/* Your content */}
-                          <button onClick={handleLogOut}>
+                          <Link className="sideBarItems" to="/">
+                            Home{" "}
+                            <i className="fa-solid fa-house"></i>
+                          </Link>
+                          <Link className="sideBarItems" to="/cart">
+                            Cart{" "}
+                            <i className="fa-brands fa-opencart"></i>
+                          </Link>
+                          <div className="sideBarItems">
+                            New Arrivals
+                            <i>New</i>
+                          </div>
+                          <div className="sideBarItems" onClick={()=>setSubMenu(!subMenu)}>
+                            Men Collection
+                            {subMenu ? (<i class="fa-solid fa-minus"></i>) : (<i className="fa-solid fa-plus"></i>)}
+                          </div>
+                          <div className={subMenu ? "subMenu" : "hideSubMenu"}>
+                            <li onClick={()=>handleClick("male","shirt")}>Shirt</li>
+                            <li onClick={()=>handleClick("male","tshirt")}>T-Shirt</li>
+                            <li onClick={()=>handleClick("male","shoes")}>Shoes</li>
+                            <li onClick={()=>handleClick("male","jeans")}>Jeans</li>
+                          </div>
+                          <div className="sideBarItems" onClick={()=>setSubMenuWomen(!subMenuWomen)}>
+                            Women Collection
+                            {subMenuWomen ? (<i class="fa-solid fa-minus"></i>) : (<i className="fa-solid fa-plus"></i>)}
+                          </div>
+                          <div className={subMenuWomen ? "subMenu" : "hideSubMenu"}>
+                            <li onClick={()=>handleClick("female","shirt")}>Shirt</li>
+                            <li onClick={()=>handleClick("female","tshirt")}>T-Shirt</li>
+                            <li onClick={()=>handleClick("female","shoes")}>Shoes</li>
+                            <li onClick={()=>handleClick("female","jeans")}>Jeans</li>
+                          </div>
+                          <button className="sideBarItems button"  onClick={handleLogOut}>
                             Logout{" "}
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                            <i className="fa-solid fa-arrow-right-from-bracket"></i>
                           </button>
                           <br></br>
-                          <Link to="/">
-                            Home{" "}
-                            <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                          </Link>
+                          
                         </div>
                       </div>
                     </Dialog.Panel>

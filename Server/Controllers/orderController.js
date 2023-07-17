@@ -1,12 +1,22 @@
-const Order = require("../Model/orders");;
+const Order = require("../Model/orders");
+const Product = require("../Model/products");
 
 module.exports.addOrder = async (req, res) => {
-    let { coupon } = req.body;
-    if(coupon === '') {
-        req.body.coupon = "Na"
-    }
+    let { coupon,quantity,units,sales,pUid } = req.body;
+    console.log("units",units,typeof(units));
+    console.log("sales",sales,typeof(sales));
+    if(coupon === '') req.body.coupon = "NA"
     try {
-        let order = Order.create(req.body);
+
+        let product = await Product.findOne({uid:pUid});
+        let oldSales = product.sales;
+        product.sales = oldSales+(sales);
+        let oldUnits = product.units;
+        product.units = oldUnits + units;
+        product.markModified("sales");
+        product.markModified("units");
+        product.save();
+        let order = await Order.create(req.body);
         return res.status(201).send("order placed");
     } catch (err) {
         console.error(err);
@@ -16,11 +26,36 @@ module.exports.addOrder = async (req, res) => {
 }
 
 module.exports.getOrders = async (req, res) => {
+    const {role,uid} = req.body;
+
     try {
-        const order = await Order.find({});
-        console.log(order)
-        return res.status(201).send(order);
-       
+        let orders = [];
+        if(role === "Vendor") {
+            orders = await Order.find({vUid:uid});
+        }
+        if (role === "Customer") {
+            orders = await Order.find({cUid:uid});
+        } 
+        if (role === "Admin") {
+            orders = await Order.find({});
+        }
+        return res.status(201).send(orders);
+    } catch (err) {
+        console.error(err);
+        res.statusMessage = "An error occurred in deleting cart items.";
+        return res.status(500).end();
+    }
+}
+
+module.exports.changeStatus = async (req, res) => {
+    const {_id,status} = req.body;
+
+    try {
+        let orders = await Order.findOne({_id:_id});
+        orders.status = status;
+        orders.markModified["status"];
+        orders.save()
+        return res.status(201).send(orders);
     } catch (err) {
         console.error(err);
         res.statusMessage = "An error occurred in deleting cart items.";

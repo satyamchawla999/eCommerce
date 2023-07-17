@@ -29,25 +29,7 @@ const Products = (props) => {
       }
     };
 
-    const getOrders = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/order/get-orders"
-        );
-
-        if (response.status === 201) {
-          setOrders(response.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    if(type === "orders") {
-      getOrders();
-    } else {
-      getProducts();
-    }
+    getProducts();
     
   }, [deleteProduct]);
 

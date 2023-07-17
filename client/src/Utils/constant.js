@@ -1,4 +1,6 @@
 export const BASE_IMG_URL = "http://localhost:8000/Products/";
+export const BASE_USER_IMG_URL = "http://localhost:8000/Users/";
+
 
 export const getValues = (product) => {
 
@@ -24,5 +26,17 @@ export const getImages = (product) => {
         image3: (product ? (BASE_IMG_URL + product?.imgUrl[2]) : ""),
         image4: (product ? (BASE_IMG_URL + product?.imgUrl[3]) : ""),
     }
+    return data;
+}
+
+export const getUserImages = (user) => {
+    let data = {}
+    if(Object.keys(user).length !== 0) {
+        data = {
+            image1: (user && user?.imgUrl[0] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[0]) : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/1200px-Missing_avatar.svg.png"),
+            image2: (user && user?.imgUrl[1] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[1]) : "https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"),
+        }
+    }
+    
     return data;
 }

@@ -12,6 +12,8 @@ app.use(express.json());
 app.use(cors());
 
 app.use('/Products',express.static(__dirname + '/Products'));
+app.use('/Users',express.static(__dirname + '/Users'));
+
 
 app.use('/',require('./Routes'));
 

@@ -38,6 +38,14 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    sales: {
+      type: Number,
+      default: 0
+    },
+    units: {
+      type: Number,
+      default: 0
+    },
     vUid: {
       type: String,
       required: true,

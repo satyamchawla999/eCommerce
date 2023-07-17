@@ -2,8 +2,46 @@ let User = require("../Model/users");
 let Product = require("../Model/products");
 // let productController = require("./productController")
 
-module.exports.signUp = async (req, res) => {
+module.exports.getUsers = async (req, res) => {
+  try {
+    let users = await User.find({ role: req.body.role });
 
+    if (users) {
+      return res.status(201).send(users);
+    } else {
+        res.statusMessage = "User Already Exists";
+        return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the user.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.validateVendor = async (req, res) => {
+  try {
+    let user = await User.findOne({ uid: req.body.uid });
+
+    if (user) {
+      let validate = user.validation;
+      user.validation = !validate;
+      user.markModified["validation"];
+      user.save();
+      console.log(user.validation);
+      return res.status(201).send("success");
+    } else {
+        res.statusMessage = "error";
+        return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the user.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.signUp = async (req, res) => {
   try {
     let user = await User.findOne({ uid: req.body.uid });
 
@@ -13,7 +51,13 @@ module.exports.signUp = async (req, res) => {
       return res.status(201).send(user);
     } else {
       if (req.body.authProvider === "Google") {
-        return res.status(201).send(user);
+        if(user.validation === true) {
+          return res.status(201).send(user);
+        } else {
+          res.statusMessage = "Your Account is Disabled";
+          return res.status(204).end();
+        }
+        
       } else {
         res.statusMessage = "User Already Exists";
         return res.status(409).end();
@@ -27,21 +71,27 @@ module.exports.signUp = async (req, res) => {
 };
 
 module.exports.signIn = async (req, res) => {
-  const { uid, email, password } = req.body;
+  const { email, phone, password } = req.body;
 
   try {
-
-    let user = await User.findOne({ email: email });
-
-    console.log(user);
+    let user = {};
+    if (email !== "NA") {
+      user = await User.findOne({ email: email });
+    } else {
+      user = await User.findOne({ phone: phone });
+    }
 
     if (user && user.password === password) {
-      return res.status(201).send(user);
+      if(user.validation === true) {
+        return res.status(201).send(user);
+      } else {
+        res.statusMessage = "Your Account is Disabled";
+        return res.status(204).end();
+      }
     } else {
       res.statusMessage = "User Not Present";
       return res.status(409).end();
     }
-
   } catch (err) {
     console.error(err);
     res.statusMessage = "An error occurred while creating the user.";
@@ -50,7 +100,7 @@ module.exports.signIn = async (req, res) => {
 };
 
 module.exports.addAddress = async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
     let user = await User.findOneAndUpdate(
       { uid: req.body.uid },
@@ -72,17 +122,16 @@ module.exports.addAddress = async (req, res) => {
 
 module.exports.deleteItems = async (req, res) => {
   try {
-    let user = await User.findOne({ uid: req.body.uid },);
+    let user = await User.findOne({ uid: req.body.uid });
     if (user) {
-
-      if(req.body.type === "address") {
-        user.address.splice(req.body.index,1);
-        user.markModified('address');
+      if (req.body.type === "address") {
+        user.address.splice(req.body.index, 1);
+        user.markModified("address");
       } else {
-        user.cart.splice(req.body.index,1);
-        user.markModified('cart');
+        user.cart.splice(req.body.index, 1);
+        user.markModified("cart");
       }
-      
+
       await user.save();
       return res.status(201).send("deleted");
     } else {
@@ -97,11 +146,9 @@ module.exports.deleteItems = async (req, res) => {
 };
 
 module.exports.getAddress = async (req, res) => {
-  console.log(req.body)
+  console.log(req.body);
   try {
-    let user = await User.findOne(
-      { uid: req.body.uid }
-    );
+    let user = await User.findOne({ uid: req.body.uid });
     if (user) {
       return res.status(201).send(user.address);
     } else {
@@ -121,35 +168,32 @@ module.exports.addCart = async (req, res) => {
     let user = await User.findOne({ uid: req.body.uid });
 
     if (user) {
-      const cartItemIndex = user.cart.findIndex(item => item.pUid === pUid);
+      const cartItemIndex = user.cart.findIndex((item) => item.pUid === pUid);
       if (cartItemIndex !== -1) {
-
         // console.log(typeof (quantity))
 
         if (update === true) {
           user.cart[cartItemIndex].quantity = parseInt(quantity);
-
         } else {
-          quantity = parseInt(user.cart[cartItemIndex].quantity) + parseInt(quantity);
+          quantity =
+            parseInt(user.cart[cartItemIndex].quantity) + parseInt(quantity);
           user.cart[cartItemIndex].quantity = quantity;
         }
-
-
       } else {
         user.cart.push({ pUid, quantity, uid });
       }
 
-      user.markModified('cart');
+      user.markModified("cart");
       await user.save();
 
       return res.status(201).send(user.cart);
     } else {
-      res.statusMessage = 'User Not Found';
+      res.statusMessage = "User Not Found";
       return res.status(409).end();
     }
   } catch (err) {
     console.error(err);
-    res.statusMessage = 'An error occurred while adding to the cart.';
+    res.statusMessage = "An error occurred while adding to the cart.";
     return res.status(500).end();
   }
 };
@@ -160,7 +204,6 @@ module.exports.getCartItems = async (req, res) => {
     let user = await User.findOne({ uid: uid });
 
     if (user) {
-
       let cart = [];
 
       for (const item of user.cart) {
@@ -168,7 +211,7 @@ module.exports.getCartItems = async (req, res) => {
         if (product) {
           const data = {
             product: product,
-            quantity: item.quantity
+            quantity: item.quantity,
           };
           cart.push(data);
         }
@@ -192,9 +235,8 @@ module.exports.setUserRole = async (req, res) => {
     let user = await User.findOne({ uid: uid });
 
     if (user) {
-
       user.role = role;
-      user.markModified('role');
+      user.markModified("role");
       await user.save();
 
       return res.status(201).send(user.role);
@@ -210,14 +252,13 @@ module.exports.setUserRole = async (req, res) => {
 };
 
 module.exports.emptyCart = async (req, res) => {
-  const { uid} = req.body;
+  const { uid } = req.body;
   try {
     let user = await User.findOne({ uid: uid });
 
     if (user) {
-
       user.cart = [];
-      user.markModified('cart');
+      user.markModified("cart");
       await user.save();
 
       return res.status(201).send("delete");
@@ -227,6 +268,34 @@ module.exports.emptyCart = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.statusMessage = "An error occurred in deleting cart items.";
+    return res.status(500).end();
+  }
+};
+
+module.exports.updateProfile = async (req, res) => {
+  const files = req.files;
+  try {
+    let user = await User.findOne({ uid: req.body.uid });
+    if (user) {
+      let imgUrl = [
+        files?.image1 ? files?.image1[0]?.filename : user.imgUrl[0],
+        files?.image2 ? files?.image2[0]?.filename : user.imgUrl[1],
+      ];
+
+      const updatedData = { ...req.body, imgUrl: imgUrl };
+      const mergedData = { ...user.toObject(), ...updatedData };
+      Object.assign(user, mergedData);
+      const savedData = await user.save();
+      console.log(savedData);
+
+      return res.status(201).send(savedData);
+    } else {
+        res.statusMessage = "Error";
+        return res.status(409).end();
+    }
+  } catch (err) {
+    console.error(err);
+    res.statusMessage = "An error occurred while creating the user.";
     return res.status(500).end();
   }
 };

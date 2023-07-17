@@ -4,6 +4,7 @@ import { notification, Radio } from "antd";
 import { ProductItems } from "./subComponents";
 import { setUserData,setUser } from "../features/user/userSlice";
 import { useSelector,useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import "../assets/styles/home.scss"
 
 const callouts = [
@@ -13,6 +14,7 @@ const callouts = [
     imageSrc: require("../assets/images/women.png"),
     imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
     href: '#',
+    value:"female"
   },
   {
     name: '',
@@ -20,6 +22,7 @@ const callouts = [
     imageSrc: 'https://i.pinimg.com/originals/c7/09/ac/c709acb1309dfcccc6aa0d67a90a316c.jpg',
     imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
     href: '#',
+    value:"all"
   },
   {
     name: '',
@@ -27,6 +30,7 @@ const callouts = [
     imageSrc: require("../assets/images/man.png"),
     imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
     href: '#',
+    value:"male"
   },
 ]
 
@@ -36,6 +40,7 @@ const Home = () => {
   console.log("products",products);
   const [api, contextHolder] = notification.useNotification();
   const [role, setRole] = useState("0");
+  const navigate = useNavigate();
 
   const dispatch = useDispatch();
 
@@ -91,6 +96,17 @@ const Home = () => {
     
   };
 
+  
+  const handleClick = async (value)=>{
+    // e.stopPropagation();
+    console.log("hey",value);
+    const data = {
+      category:value,
+      subCategory: "All"
+    }
+    navigate({pathname:"/productcollection"},{state:data})
+  }
+
   return (
     <>
       {userData?.role === "0" && <div className="roleSelector">
@@ -113,7 +129,7 @@ const Home = () => {
 
             <div className="mt-6 space-y-12 lg:grid lg:grid-cols-3 lg:gap-x-6 lg:space-y-0">
               {callouts.map((callout) => (
-                <div key={callout.name} className="group relative">
+                <div key={callout.name} className="group relative" onClick={(e)=>handleClick(callout.value)}>
                   <div className="relative h-80 w-full overflow-hidden rounded-lg bg-white sm:aspect-h-1 sm:aspect-w-2 lg:aspect-h-1 lg:aspect-w-1 group-hover:opacity-75 sm:h-64">
                     <img
                       src={callout.imageSrc}

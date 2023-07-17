@@ -10,6 +10,7 @@ import CartItems from "./CartItems";
 import CartInfoSection from "./CartInfoSection";
 import UpdateProfile from "./UpdateProfile";
 import Orders from "./Orders";
+import VendorList from "./VendorList";
 
 export {
     Header,
@@ -23,5 +24,6 @@ export {
     CartItems,
     CartInfoSection,
     UpdateProfile,
-    Orders
+    Orders,
+    VendorList
 }

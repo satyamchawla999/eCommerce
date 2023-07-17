@@ -32,7 +32,7 @@ const AddProductForm = () => {
         footer={[]}
         width={1000}
       >
-        <ModalData/>
+        <ModalData handleCancel={handleCancel}/>
       </Modal>
     </>
   );

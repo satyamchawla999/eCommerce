@@ -11,7 +11,7 @@ import axios from 'axios';
 
 const CartInfoSection = (props) => {
     const userData = useSelector((state) => state.userData)
-    const { cartTotal, Coupon, total, page, item, couponData, setCouponData } = props
+    const { cartTotal, cartQuantity , Coupon, total, page, item, couponData, setCouponData } = props
 
     const dispatch = useDispatch()
     // const [couponData,setCouponData] = useState(useSelector((state) => state.coupon))
@@ -63,13 +63,25 @@ const CartInfoSection = (props) => {
             let cartItems = props.cartItems;
             cartItems.forEach((value) => {
                 const product = value.product
+                let sales = product.price * value.quantity;
+                if(couponData === "FREEDEL") sales = sales-200;
+                if(couponData === "EPIC") sales = (sales - (sales*0.25))+200;
                 const data = {
+                    imgUrl:product.imgUrl[0],
+                    cName:userData.name,
+                    name:product.name,
+                    description:product.description,
+                    vName:product.vName,
+                    price:product.price,
                     pUid: product.uid,
                     vUid: product.vUid,
                     cUid: userData.uid,
                     address: item,
                     status: "Successfull",
-                    coupon: couponData
+                    coupon: couponData,
+                    quantity: value.quantity,
+                    sales:sales,
+                    units:value.quantity,
                 }
                 console.log("product", data)
 

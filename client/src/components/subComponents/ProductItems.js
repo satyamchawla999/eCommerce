@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "antd";
 import { ModalData } from "./";
 import { useSelector } from "react-redux";
-import axios from "axios"
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
 const ProductItems = (props) => {
@@ -11,11 +11,12 @@ const ProductItems = (props) => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [productPage, setProductPage] = useState(false);
+  const [info, setInfo] = useState(false);
 
   const navigate = useNavigate();
 
   const showModal = (e) => {
-    e.stopPropagation()
+    e.stopPropagation();
     setIsModalOpen(true);
   };
 
@@ -24,26 +25,36 @@ const ProductItems = (props) => {
   };
 
   const handleCancel = () => {
+    setInfo(false);
     setIsModalOpen(false);
   };
 
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.stopPropagation();
     try {
-      const response = await axios.post("http://localhost:8000/product/delete", { uid: product.uid });
+      const response = await axios.post(
+        "http://localhost:8000/product/delete",
+        { uid: product.uid }
+      );
       if (response.status === 201) {
         console.log("Deleted Successfully!");
-        setDeleteProduct((prevValues) => (!prevValues));
+        setDeleteProduct((prevValues) => !prevValues);
       }
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   const handleProductPage = (e) => {
     // e.stopPropagation()
-    isModalOpen !== true && navigate(`/productpage/${product.uid}`)
-    
-  }
+    isModalOpen !== true && navigate(`/productpage/${product.uid}`);
+  };
+
+  const handleInfo = (e) => {
+    // e.stopPropagation();
+    setInfo(true);
+    showModal(e);
+  };
 
   return (
     <div onClick={handleProductPage} className="handleProduct">
@@ -63,35 +74,51 @@ const ProductItems = (props) => {
                 {product.name}
               </a>
             </h3>
-            {userData.role !== "Vendor" ? (
+            {userData.role === "Customer" ? (
               <p className="mt-1 text-sm text-gray-500">
                 {product.description}
               </p>
+            ) : userData.uid === product.vUid || userData.role === "Admin" ? (
+              <p className="mt-1 text-sm text-gray-500">Rs {product.price}</p>
             ) : (
-              userData.uid === product.vUid ? <p className="mt-1 text-sm text-gray-500">
-                Rs {product.price}
-              </p> : <p className="mt-1 text-sm text-gray-500">
+              <p className="mt-1 text-sm text-gray-500">
                 {product.description}
               </p>
             )}
           </div>
 
-          {userData.role !== "Vendor" ? (
+          {userData.role === "Customer" ? (
             <p className="text-sm font-medium "> Rs {product.price}</p>
-          ) : (
-            userData.uid === product.vUid ? <>
+          ) : userData.uid === product.vUid || userData.role === "Admin" ? (
+            <>
               <p className="text-sm font-medium">
                 <span>
-                  <button className="editIcon" onClick={showModal} data-name="edit">
-                    <i className="fa-solid fa-pen-to-square"></i>
+                  <button
+                    className="editIcon"
+                    onClick={showModal}
+                    data-name="edit"
+                  >
+                    <i className="fa-solid fa-pen-to-square"></i> Edit
                   </button>
                 </span>
 
-                <button className="text-red-500 ml-2 editIcon" onClick={handleDelete} >
-                  <i className="fa-regular fa-trash-can"></i>
+                <button
+                  className="text-red-500 ml-4 editIcon"
+                  onClick={handleDelete}
+                >
+                  <i className="fa-regular fa-trash-can"></i> Delete
+                </button>
+
+                <button
+                  className="text-green-500 ml-4 editIcon"
+                  onClick={handleInfo}
+                >
+                  <i class="fa-solid fa-circle-info"></i> Info
                 </button>
               </p>
-            </> : <>
+            </>
+          ) : (
+            <>
               <p className="text-sm font-medium "> Rs {product.price}</p>
             </>
           )}
@@ -99,14 +126,31 @@ const ProductItems = (props) => {
       </div>
 
       <Modal
-        title="Edit Product"
+        title={info ? "Product Info" : "Edit Product"}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[]}
-        width={1000}
+        width={info ? 700 : 1000}
       >
-        <ModalData product={product} />
+        {info ? (
+          <div className="productInfoContainer">
+            <div className="productInfoImage">
+              <img
+                src={`http://localhost:8000/Products/${product.imgUrl[0]}`}
+                alt="#"
+              />
+            </div>
+            <div className="productInfoItems">
+              <p>Product Name : <span>{product?.name}</span></p>
+              <p>Product Price : <span>{product?.price}</span></p>
+              <p>Units Sold : <span>{product?.units}</span></p>
+              <p>Total Sales : <span>{product?.sales}</span></p>
+            </div>
+          </div>
+        ) : (
+          <ModalData product={product} handleCancel={handleCancel} />
+        )}
       </Modal>
     </div>
   );

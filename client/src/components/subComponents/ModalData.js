@@ -1,32 +1,51 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { notification} from "antd";
+import axios from "axios";
 
 import { getValues, getImages } from "../../Utils/constant";
 
 const ModalData = (props) => {
 
-  const { product } = props;
+  const { product,handleCancel } = props;
   const userData = useSelector((state) => state.userData);
 
   const [values, setValues] = useState(getValues(product));
   const [img, setImg] = useState(getImages(product));
   const [draft, setDraft] = useState(false);
 
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, message) => {
+    api[type]({ message: message });
+  };
   const isRequired = product ? false : true;
   const formAction = product ? "update-product" : "add-product";
 
-  // const handleSubmit = async () =>{
-  //   console.log(values);
-  //   // try {
-  //   //   const response = await axios({
-  //   //     method: "post",
-  //   //     url: `http://localhost:8000/product/${formAction}`,
-  //   //     headers : {"Content-Type":"multipart/form-data"}
-  //   //   })
-  //   // } catch (err) {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    console.log(formData)
 
-  //   // }
-  // }
+    try {
+      const response = await axios.post(
+        `http://localhost:8000/product/${formAction}`,
+        formData,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
+      if(response.status === 201) {
+        openNotificationWithIcon("success", "Product Added Successfully");
+        console.log("added");
+      } else {
+        openNotificationWithIcon("error", "Please Try Again");
+      }
+
+    } catch (err) {
+      console.error("Error submitting form data:", err);
+    }
+    handleCancel();
+  };
 
   const handleChange = (e) => {
     const file = e.target.files[0];
@@ -56,10 +75,10 @@ const ModalData = (props) => {
 
   return (
     <>
+    {contextHolder}
       <form
         className="modalForm"
-        method="post"
-        action={`http://localhost:8000/product/${formAction}`}
+        onSubmit={handleSubmit}
         encType="multipart/form-data"
       >
         <div className="inputContainer">

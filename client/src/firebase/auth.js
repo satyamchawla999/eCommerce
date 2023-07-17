@@ -1,5 +1,6 @@
 import { auth, googleProvider, db } from "./firebase";
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   signInWithPopup,
@@ -27,10 +28,14 @@ const signInWithGoogle = async () => {
       uid: user.uid,
       name: user.displayName,
       email: user.email,
-      password: "123",
-      imgUrl: user.photoURL,
+      phone: "NA",
+      password: "NA",
+      imgUrl: ["NA","NA"],
       role:"0",
       authProvider: "Google",
+      gNo:"NA",
+      bName:"NA",
+      bType:"NA",
     };
 
     const response = await axios.post(
@@ -50,17 +55,13 @@ const signInWithGoogle = async () => {
 };
 
 // MANUAL SIGN IN AND ADDING USER TO DATABASE WITH QUERY AND ADDDOCS
-const logInWithEmailAndPassword = async (email, password) => {
+const logInWithEmailAndPassword = async (email, phone, password) => {
   try {
-    const res = await signInWithEmailAndPassword(auth, email, password);
-    const user = res.user;
-
-    console.log("level2")
-
+    
     const data = {
-      uid: user.uid,
       email: email,
-      password:password,
+      phone: phone,
+      password: password,
       authProvider: "Manual",
     };
 
@@ -69,13 +70,7 @@ const logInWithEmailAndPassword = async (email, password) => {
       data
     );
 
-    console.log("hello",response.data);
-
-    if (response.status === 201) {
-      return response.data;
-    } else {
-      return;
-    }
+    return response;
 
   } catch (err) {
     console.error(err);
@@ -84,22 +79,33 @@ const logInWithEmailAndPassword = async (email, password) => {
 };
 
 // MANUAL SIGN UP AND ADDING USER TO DATABASE WITH QUERY AND ADDDOCS
-const registerWithEmailAndPassword = async (name, email, password, role) => {
+const registerWithEmailAndPassword = async (name, email, phone, password, role) => {
   try {
-    const res = await createUserWithEmailAndPassword(auth, email, password);
+    let data = {};
+    let res = {};
+    let user = {};
 
-    let user = res.user;
-    await updateProfile(user, { displayName: name });
+    if(email !== "NA") {
+      res = await createUserWithEmailAndPassword(auth, email, password);
+      user = res.user;
+      await updateProfile(user, { displayName: name });
+    } else {
+      const uniqueId = uuidv4();
+      user["uid"] = uniqueId;
+    }
 
-    const data = {
+    data = {
       uid: user.uid,
       name: name,
       email: email,
+      phone: phone,
       password: password,
-      imgUrl:
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/1200px-Missing_avatar.svg.png",
+      imgUrl: ["NA","NA"],
       role: role,
       authProvider: "Manual",
+      gNo:"NA",
+      bName:"NA",
+      bType:"NA",
     };
 
     const response = await axios.post(

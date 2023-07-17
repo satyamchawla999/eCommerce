@@ -11,11 +11,13 @@ const CheckoutPage = () => {
   const userData = useSelector((state) => state.userData);
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
-  const [cartQuantity, setCartQuantity] = useState(false);
+  const [cartQuantity, setCartQuantity] = useState(0);
   const [delivery, setDelivery] = useState(200);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState((delivery + cartTotal) - discount);
   const [cartInfo, setCartInfo] = useState(false);
+  const [change,setChange] = useState(false)
+
   const { state } = useLocation();
   console.log("state", state);
 
@@ -43,19 +45,21 @@ const CheckoutPage = () => {
             return { sum, quantity };
           }
 
-          let details = getDetails()
+          let details = getDetails();
 
           setCartItems(response.data);
+          setCartQuantity(details.quantity)
           setCartTotal(details?.sum);
-          if (couponData === "FREEDEL") {
+          const d = details?.sum*0.25
+          if(couponData === "FREEDEL") {
             setDelivery(0)
-            setTotal(discount + 0 + details?.sum)
-          } else if (couponData === "EPIC") {
-            const d = details?.sum * 0.25
+            setTotal(0 + details?.sum)
+          } else if(couponData === "EPIC") {
+            
             setDiscount(d);
-            setTotal((details?.sum - d) + 200)
+            setTotal((details?.sum-d)+200)
           } else {
-            setTotal((delivery + details?.sum) - discount)
+            setTotal((delivery + details?.sum)-discount)
           }
 
           setCartInfo(true)
@@ -67,7 +71,7 @@ const CheckoutPage = () => {
     };
 
     getCartItems();
-  }, [cartQuantity]);
+  }, [change]);
 
 
   const handleQuantityChange = async (q, pid) => {
@@ -88,7 +92,7 @@ const CheckoutPage = () => {
 
       if (response.status === 201) {
         console.log("added to cart");
-        setCartQuantity(!cartQuantity)
+        setChange(!change)
       }
     } catch (err) {
       console.log(err);
@@ -103,7 +107,7 @@ const CheckoutPage = () => {
 
       if (response.status === 201) {
         console.log(response.data);
-        setCartQuantity(!cartQuantity)
+        setChange(!change)
       }
     } catch (err) {
       console.log(err);

@@ -80,3 +80,46 @@
     }
   }
 }
+
+.phoneSection {
+  width: 100%;
+
+  form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    label {
+      margin: 10px 0px;
+      font-weight: 100;
+      font-size: 12px;
+      letter-spacing: 3px;
+    }
+
+    input {
+      height: 45px;
+      border: 1px solid lightgrey;
+      margin-bottom: 20px;
+      padding: 10px;
+    }
+
+    button {
+      height: 45px;
+      margin-bottom: 20px;
+      margin-top: 20px;
+      color: white;
+      background-color: black;
+    }
+  }
+
+}
+
+.otp-input {
+  color: black;
+  background-color: black; // Set the background color to make the value visible
+}
+
+.otp-container {
+  display: flex;
+  justify-content: space-between;
+}

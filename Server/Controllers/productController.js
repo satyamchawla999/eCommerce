@@ -57,6 +57,7 @@ module.exports.updateProduct = async (req, res) => {
 
 module.exports.addProduct = async (req, res) => {
   const files = req.files; // Use req.files instead of req.file
+  console.log(files)
 
   let {
     uid,
@@ -97,10 +98,10 @@ module.exports.addProduct = async (req, res) => {
       };
 
       product = await Product.create(data);
-      return res.redirect("http://localhost:3000/profile");
+      return res.status(201).send("successfull");
     } else {
       res.statusMessage = "Product Already Exists";
-      return res.redirect("http://localhost:3000/profile");
+      return res.status(204).send("error");
     }
   } catch (err) {
     console.error(err);

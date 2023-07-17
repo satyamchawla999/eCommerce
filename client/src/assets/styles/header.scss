@@ -8,16 +8,18 @@
     height: 15vh;
 
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     align-items: center;
 
     border-bottom: 1px solid lightgrey;
+    z-index: 11;
 
     .left {
         width: 33%;
         height: 100%;
         display: flex;
         align-items: center;
+        justify-content: end;
         padding: 30px;
 
         img {
@@ -45,13 +47,13 @@
         height: 100%;
         display: flex;
         align-items: center;
-        justify-content: right;
+        justify-content: start;
         padding: 30px;
 
         img {
             height: 25px;
             width: 25px;
-            margin-left: 20px;
+            margin-right: 20px;
             cursor: pointer;
         }
     }
@@ -76,4 +78,44 @@
     p{
         font-weight: 100;
     }
+}
+
+.closePanel{
+    width: 40px;
+    height: 30px;
+}
+
+.sideBarItems {
+    cursor: pointer;
+    padding: 20px 0px;
+    padding-right: 10px;
+    border-bottom: 1px solid lightgrey;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    
+}
+
+.button {
+    position: static;
+    bottom: 0;
+    width: 100%;
+}
+
+.subMenu {
+
+    cursor: pointer;
+    li{
+        margin-left: 10px;
+        padding: 5px 0px;
+        list-style: none;
+        border-bottom: 1px solid lightgrey;
+    }
+
+    
+}
+
+.hideSubMenu{
+    cursor: pointer;
+    display: none;
 }
