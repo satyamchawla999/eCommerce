@@ -11,6 +11,8 @@ import CartInfoSection from "./CartInfoSection";
 import UpdateProfile from "./UpdateProfile";
 import Orders from "./Orders";
 import VendorList from "./VendorList";
+import Chat from "./Chat";
+import AdminChat from "./AdminChat";
 // import Products from "./Products";
 
 export {
@@ -27,5 +29,7 @@ export {
     UpdateProfile,
     Orders,
     VendorList,
+    Chat,
+    AdminChat
     // Products
 }

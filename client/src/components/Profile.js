@@ -7,7 +7,8 @@ import {
   Address,
   UpdateProfile,
   Orders,
-  VendorList
+  VendorList,
+  Chat,
 } from "./subComponents";
 
 import "../assets/styles/profile.scss";
@@ -17,7 +18,7 @@ const Profile = () => {
   const userData = useSelector((state) => state.userData);
   const [img, image] = useState(getUserImages(userData));
 
-  const {state} = useLocation();
+  const { state } = useLocation();
   const [display, setDisplay] = useState(state ? state : "Profile");
 
   const handleDisplay = (value) => {
@@ -47,8 +48,9 @@ const Profile = () => {
         {userData.role !== "Customer" && (
           <>
             <div
-              className={`profileInfoItems ${display === "Your Products" && toggel
-                }`}
+              className={`profileInfoItems ${
+                display === "Your Products" && toggel
+              }`}
               onClick={() => handleDisplay("Your Products")}
             >
               Your Products
@@ -68,16 +70,19 @@ const Profile = () => {
         >
           Address
         </div>
-        {userData.role !== "Customer" && <div
-          className={`profileInfoItems ${display === "Orders" && toggel}`}
-          onClick={() => handleDisplay("Orders")}
-        >
-          Orders
-        </div>}
+        {userData.role !== "Customer" && (
+          <div
+            className={`profileInfoItems ${display === "Orders" && toggel}`}
+            onClick={() => handleDisplay("Orders")}
+          >
+            Orders
+          </div>
+        )}
         {userData.role === "Admin" && (
           <div
-            className={`profileInfoItems ${display === "Vendor List" && toggel
-              }`}
+            className={`profileInfoItems ${
+              display === "Vendor List" && toggel
+            }`}
             onClick={() => handleDisplay("Vendor List")}
           >
             Vendor List
@@ -90,6 +95,15 @@ const Profile = () => {
         >
           Your Orders
         </div>
+
+        {userData.role === "Customer" && (
+          <div
+            className={`profileInfoItems ${display === "Chat" && toggel}`}
+            onClick={() => handleDisplay("Chat")}
+          >
+            Chat
+          </div>
+        )}
       </div>
 
       <div className="profileProductSection">
@@ -105,7 +119,9 @@ const Profile = () => {
         )}
         {display === "Your Products" && (
           <>
-            {userData.role !== "Customer" && <AddProductForm draft={false} display={display} />}
+            {userData.role !== "Customer" && (
+              <AddProductForm draft={false} display={display} />
+            )}
 
             {/* <Products draft={false} display={display} /> */}
           </>
@@ -128,6 +144,11 @@ const Profile = () => {
         {display === "Your Orders" && (
           <>
             <Orders display={display} />
+          </>
+        )}
+        {display === "Chat" && (
+          <>
+            <Chat display={display} uid={userData.uid}/>
           </>
         )}
       </div>

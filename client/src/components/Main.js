@@ -7,7 +7,7 @@ import {
 } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Home, Signin, Signup, Profile } from "./";
-import { Header, ProductPage } from "./subComponents";
+import { Header, ProductPage, AdminChat } from "./subComponents";
 import Cart from "./Cart"
 import CheckoutPage from "./CheckoutPage";
 import ProductCollection from "./subComponents/ProductCollection";
@@ -37,6 +37,8 @@ const Main = () => {
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/productcollection" element={<ProductCollection />}/>
+          <Route path="/adminchat" element={<AdminChat />}/>
+
 
 
           <Route

@@ -11,7 +11,9 @@ import "../../assets/styles/header.scss";
 
 const Header = () => {
   const user = useSelector((state) => state.user);
-  const [userData, setUserData] = useState(useSelector((state) => state.userData))
+  const [userData, setUserData] = useState(
+    useSelector((state) => state.userData)
+  );
   const [img, setImg] = useState(getUserImages(userData));
   const [subMenu, setSubMenu] = useState(false);
   const [subMenuWomen, setSubMenuWomen] = useState(false);
@@ -21,13 +23,13 @@ const Header = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    setImg(getUserImages(userData))
-  }, [])
+    setImg(getUserImages(userData));
+  }, []);
 
   const handleLogOut = async () => {
     await logout();
     dispatch(deleteUser());
-    navigate("/signup")
+    navigate("/signup");
   };
 
   const handleClick = async (category, subCategory) => {
@@ -38,25 +40,33 @@ const Header = () => {
 
     navigate(
       {
-        pathname: "/productcollection"
-
-      }, {
-      state: data
-    }
+        pathname: "/productcollection",
+      },
+      {
+        state: data,
+      }
     );
 
     window.location.reload(); // Perform a full page reload
   };
 
   const handleNavigate = (state) => {
-    navigate({ pathname: "/profile" }, { state: state })
+    navigate({ pathname: "/profile" }, { state: state });
     window.location.reload(); // Perform a full page reload
-  }
-
+  };
 
   return (
     <div className="header">
       <div className="left">
+        {userData.role === "Admin" && (
+          <>
+            <Link to="/adminchat">
+              <p style={{ fontSize: "25px", marginRight: "20px" }}>
+                <i className="fa-solid fa-headset"></i>
+              </p>
+            </Link>
+          </>
+        )}
         <img
           onClick={() => setOpen(!open)}
           src={require("../../assets/images/bars.png")}
@@ -71,11 +81,9 @@ const Header = () => {
             alt="#"
           />
         </Link>
-
       </div>
 
       <div className="right">
-
         <img src={require("../../assets/images/heart.png")} alt="#" />
         <img src={require("../../assets/images/search.png")} alt="#" />
         <Link to="/cart">
@@ -133,7 +141,8 @@ const Header = () => {
                             className="rounded-md text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-white"
                             onClick={() => setOpen(false)}
                           >
-                            <img className="closePanel"
+                            <img
+                              className="closePanel"
                               onClick={() => setOpen(!open)}
                               src={require("../../assets/images/bars.png")}
                               alt="#"
@@ -154,56 +163,100 @@ const Header = () => {
                         </div>
                         <div className="relative mt-6 flex-1 px-4 sm:px-6">
                           {/* Your content */}
-                          <div className="sideBarItems" onClick={() => handleNavigate("Profile")}>
+                          <div
+                            className="sideBarItems"
+                            onClick={() => handleNavigate("Profile")}
+                          >
                             Profile
                             <i className="fa-regular fa-user"></i>
                           </div>
                           <Link className="sideBarItems" to="/">
-                            Home{" "}
-                            <i className="fa-solid fa-house"></i>
+                            Home <i className="fa-solid fa-house"></i>
                           </Link>
                           <Link className="sideBarItems" to="/cart">
-                            Cart{" "}
-                            <i className="fa-brands fa-opencart"></i>
+                            Cart <i className="fa-brands fa-opencart"></i>
                           </Link>
-                          <div className="sideBarItems" onClick={() => handleClick("", "")}>
+                          <div
+                            className="sideBarItems"
+                            onClick={() => handleClick("", "")}
+                          >
                             New Arrivals
                             <i>New</i>
                           </div>
-                          <div className="sideBarItems" onClick={() => setSubMenu(!subMenu)}>
+                          <div
+                            className="sideBarItems"
+                            onClick={() => setSubMenu(!subMenu)}
+                          >
                             Men Collection
-                            {subMenu ? (<i class="fa-solid fa-minus"></i>) : (<i className="fa-solid fa-plus"></i>)}
+                            {subMenu ? (
+                              <i class="fa-solid fa-minus"></i>
+                            ) : (
+                              <i className="fa-solid fa-plus"></i>
+                            )}
                           </div>
                           <div className={subMenu ? "subMenu" : "hideSubMenu"}>
-                            <li onClick={() => handleClick("male", "shirt")}>Shirt</li>
-                            <li onClick={() => handleClick("male", "tshirt")}>T-Shirt</li>
-                            <li onClick={() => handleClick("male", "shoes")}>Shoes</li>
-                            <li onClick={() => handleClick("male", "jeans")}>Jeans</li>
+                            <li onClick={() => handleClick("male", "shirt")}>
+                              Shirt
+                            </li>
+                            <li onClick={() => handleClick("male", "tshirt")}>
+                              T-Shirt
+                            </li>
+                            <li onClick={() => handleClick("male", "shoes")}>
+                              Shoes
+                            </li>
+                            <li onClick={() => handleClick("male", "jeans")}>
+                              Jeans
+                            </li>
                           </div>
-                          <div className="sideBarItems" onClick={() => setSubMenuWomen(!subMenuWomen)}>
+                          <div
+                            className="sideBarItems"
+                            onClick={() => setSubMenuWomen(!subMenuWomen)}
+                          >
                             Women Collection
-                            {subMenuWomen ? (<i class="fa-solid fa-minus"></i>) : (<i className="fa-solid fa-plus"></i>)}
+                            {subMenuWomen ? (
+                              <i class="fa-solid fa-minus"></i>
+                            ) : (
+                              <i className="fa-solid fa-plus"></i>
+                            )}
                           </div>
-                          <div className={subMenuWomen ? "subMenu" : "hideSubMenu"}>
-                            <li onClick={() => handleClick("female", "shirt")}>Shirt</li>
-                            <li onClick={() => handleClick("female", "tshirt")}>T-Shirt</li>
-                            <li onClick={() => handleClick("female", "shoes")}>Shoes</li>
-                            <li onClick={() => handleClick("female", "jeans")}>Jeans</li>
+                          <div
+                            className={subMenuWomen ? "subMenu" : "hideSubMenu"}
+                          >
+                            <li onClick={() => handleClick("female", "shirt")}>
+                              Shirt
+                            </li>
+                            <li onClick={() => handleClick("female", "tshirt")}>
+                              T-Shirt
+                            </li>
+                            <li onClick={() => handleClick("female", "shoes")}>
+                              Shoes
+                            </li>
+                            <li onClick={() => handleClick("female", "jeans")}>
+                              Jeans
+                            </li>
                           </div>
-                          <div className="sideBarItems" onClick={() => handleNavigate("Your Orders")}>
+                          <div
+                            className="sideBarItems"
+                            onClick={() => handleNavigate("Your Orders")}
+                          >
                             Your Orders
                             <i>Orders</i>
                           </div>
-                          <div className="sideBarItems" onClick={() => handleNavigate("Address")}>
+                          <div
+                            className="sideBarItems"
+                            onClick={() => handleNavigate("Address")}
+                          >
                             Address
                             <i className="fa-regular fa-address-card"></i>
                           </div>
-                          <button className="sideBarItems button" onClick={handleLogOut}>
+                          <button
+                            className="sideBarItems button"
+                            onClick={handleLogOut}
+                          >
                             Logout{" "}
                             <i className="fa-solid fa-arrow-right-from-bracket"></i>
                           </button>
                           <br></br>
-
                         </div>
                       </div>
                     </Dialog.Panel>
