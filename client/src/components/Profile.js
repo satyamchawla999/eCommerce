@@ -16,10 +16,12 @@ import { getUserImages } from "../Utils/constant";
 
 const Profile = () => {
   const userData = useSelector((state) => state.userData);
-  const [img, image] = useState(getUserImages(userData));
+  const [img, setImage] = useState(getUserImages(userData));
 
   const { state } = useLocation();
   const [display, setDisplay] = useState(state ? state : "Profile");
+
+  console.log("Profile")
 
   const handleDisplay = (value) => {
     setDisplay(value);
@@ -93,7 +95,7 @@ const Profile = () => {
           className={`profileInfoItems ${display === "Your Orders" && toggel}`}
           onClick={() => handleDisplay("Your Orders")}
         >
-          Your Orders
+          Your Purchase
         </div>
 
         {userData.role === "Customer" && (
@@ -148,7 +150,7 @@ const Profile = () => {
         )}
         {display === "Chat" && (
           <>
-            <Chat display={display} uid={userData.uid}/>
+            <Chat  uid={userData.uid}/>
           </>
         )}
       </div>

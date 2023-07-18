@@ -44,8 +44,18 @@ module.exports.validateVendor = async (req, res) => {
 module.exports.signUp = async (req, res) => {
   try {
     let user = await User.findOne({ uid: req.body.uid });
+    let emailFound = false;
+    let phoneFound = false;
+    if(req.body.email !== "NA") {
+      emailFound = await User.findOne({ uid: req.body.email });
+    }
 
-    if (!user) {
+    if(req.body.phone !== "NA") {
+      phoneFound = await User.findOne({ uid: req.body.phone });
+    }
+    
+
+    if (!user && !emailFound && !phoneFound) {
       user = await User.create(req.body);
       user = await User.findOne({ uid: req.body.uid });
       return res.status(201).send(user);

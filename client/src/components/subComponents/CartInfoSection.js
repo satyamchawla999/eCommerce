@@ -14,13 +14,14 @@ import { useNavigate } from 'react-router-dom';
 
 const CartInfoSection = (props) => {
     const userData = useSelector((state) => state.userData)
-    const { cartTotal, cartQuantity, Coupon, total, page, item, couponData, setCouponData } = props
+    const { cartTotal, cartQuantity, Coupon, total, page, item, couponData, setCouponData } = props;
+    console.log(cartQuantity, "total cartQuantity")
 
     const dispatch = useDispatch()
     // const [couponData,setCouponData] = useState(useSelector((state) => state.coupon))
 
     const [orderTotal, setOrderTotal] = useState(0)
-    const [delivery, setDelivery] = useState(props.delivery);
+    const [delivery, setDelivery] = useState(cartQuantity === 0 ? 0 : props.delivery);
     const [discount, setDiscount] = useState(props.discount);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -37,7 +38,15 @@ const CartInfoSection = (props) => {
 
 
 
-    const showModal = () => setIsModalOpen(true);
+    const showModal = () => {
+        if (cartQuantity === 0) {
+            openNotificationWithIcon("error", "Cart is Empty!");
+            return;
+        } else {
+            setIsModalOpen(true); 
+        }
+    }
+
     const handleOk = () => setIsModalOpen(false);
     const handleCancel = () => setIsModalOpen(false);
 
@@ -72,6 +81,11 @@ const CartInfoSection = (props) => {
     }
 
     const handleBuy = async () => {
+
+        if (cartQuantity === 0) {
+            openNotificationWithIcon("error", "Cart is Empty!");
+            return;
+        }
 
         try {
             let cartItems = props.cartItems;
@@ -136,7 +150,7 @@ const CartInfoSection = (props) => {
             emptyCart();
             openNotificationWithIcon("success", "Order Placed");
             // navigate({pathName:"/profile"},{state:"Your Orders"});
-            navigate({pathname:"/profile"},{state:"Your Orders"})
+            navigate({ pathname: "/profile" }, { state: "Your Orders" })
             // navigate("")
 
         } catch (err) {
@@ -148,7 +162,7 @@ const CartInfoSection = (props) => {
 
     return (
         <div className="cartInfoSection">
-             {contextHolder}
+            {contextHolder}
             <p className="detailHeading">Order Details</p>
 
             <div className="orderDetailItems">

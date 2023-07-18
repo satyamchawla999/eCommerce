@@ -6,9 +6,10 @@ const chatSchema = new mongoose.Schema(
         type: String,
         required: true,
     },
-    imgUrl: {
+    imgUrl: [{
       type: String,
-    },
+      required: true,
+    }],
     cName: {
       type: String,
       required: true,
@@ -22,6 +23,10 @@ const chatSchema = new mongoose.Schema(
       required: true,
     },
     cUid: {
+      type: String,
+      required: true,
+    },
+    USERID: {
       type: String,
       required: true,
     },

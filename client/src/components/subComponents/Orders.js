@@ -74,29 +74,43 @@ function Orders(props) {
       </h2>
 
       <div className="orderContainer">
-        <div className="orderItemSection">
-          {orders.length === 0 ? (
-            <div className="emptyCart">
-              <img src="https://shop.millenniumbooksource.com/static/images/cart1.png"></img>
-            </div>
-          ) : (
-            orders.map(
-              (item, index) =>
-                (userData.uid === item.cUid ||
-                userData.uid === item.vUid ||
-                userData.role === "Admin" ) && (
-                  <CartItems
-                    page={"orders"}
-                    key={index}
-                    item={item}
-                    handleStatusChange={handleStatusChange}
-                    display={display}
-                    handleCancel={handleCancel}
-                  />
-                ))
-            )
-          }
-        </div>
+      <div className="orderItemSection">
+  {orders.length === 0 ? (
+    <div className="emptyCart">
+      <img src="https://shop.millenniumbooksource.com/static/images/cart1.png" />
+    </div>
+  ) : (
+    userData.role === "Admin" && display === "Orders" ? (
+      orders.map((item, index) =>
+        userData.uid !== item.cUid && (
+          <CartItems
+            page="orders"
+            key={index}
+            item={item}
+            handleStatusChange={handleStatusChange}
+            display={display}
+            handleCancel={handleCancel}
+          />
+        )
+      )
+    ) : (
+      orders.map((item, index) =>
+        (userData.uid === item.cUid ||
+          userData.uid === item.vUid ||
+          userData.role === "Admin") && (
+          <CartItems
+            page="orders"
+            key={index}
+            item={item}
+            handleStatusChange={handleStatusChange}
+            display={display}
+            handleCancel={handleCancel}
+          />
+        )
+      )
+    )
+  )}
+</div>
       </div>
     </div>
   );

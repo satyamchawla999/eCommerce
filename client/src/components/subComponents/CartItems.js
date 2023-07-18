@@ -17,7 +17,7 @@ const CartItems = (props) => {
 
   const getOrderDate = (originalDateTime) => {
     const dateTime = new Date(originalDateTime);
-    console.log("date",dateTime)
+    console.log("date", dateTime)
     return dateTime;
   };
 
@@ -41,7 +41,7 @@ const CartItems = (props) => {
   const max = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
   const status = ["Successful", "Shipped", "Out For Delivery", "Delivered"];
 
-   
+
 
   return (
     <div className="cartItems">
@@ -62,10 +62,15 @@ const CartItems = (props) => {
               Purchased Date :<br />
               {itemDate}
             </span>
-            <span>
+            {userData.role === "Admin" ? <span style={{ fontSize: "14px" }}>
+              {props?.display === "Your Orders" ? <>Vendor {product.vName}</> : <> Customer {product.cName} <br />
+                Vendor {product.vName}</>}
+
+            </span> : <span>
               {userData.role === "Customer" ? "Seller" : "Customer"}:{" "}
               {product.vName}
-            </span>
+            </span>}
+
           </>
         ) : (
           <>
@@ -145,12 +150,12 @@ const CartItems = (props) => {
             <p>Pincode : {address.pincode}</p>
           </div>
 
-          {props?.display === "Your Orders" && ( diffrence <= 1 && <div className="priceContainer">
-            <span className="cancelButton" onClick={()=>handleCancel(item._id)}>Cancel Product</span>
+          {props?.display === "Your Orders" && (diffrence <= 1 && <div className="priceContainer">
+            <span className="cancelButton" onClick={() => handleCancel(item._id)}>Cancel Product</span>
           </div>)}
 
           {props?.display === "Orders" && <div className="priceContainer">
-            <span className="cancelButton" onClick={()=>handleCancel(item._id)}>Cancel Product</span>
+            <span className="cancelButton" onClick={() => handleCancel(item._id)}>Cancel Product</span>
           </div>}
 
 
@@ -164,7 +169,7 @@ const CartItems = (props) => {
 
       {page === "cart" && (
         <div className="removeContainer">
-          <p onClick={() => handleItemDelete(key)}>Remove</p>
+          <p onClick={() => handleItemDelete(key,quantity)}>Remove</p>
         </div>
       )}
     </div>

@@ -13,6 +13,7 @@ const ProductItems = (props) => {
   const [productPage, setProductPage] = useState(false);
   const [info, setInfo] = useState(false);
   const [options, setOptions] = useState(false);
+  const [stock,setStock] = useState(product?.stock)
 
   const navigate = useNavigate();
 
@@ -40,7 +41,7 @@ const ProductItems = (props) => {
     try {
       const response = await axios.post(
         "http://localhost:8000/product/delete",
-        { uid: product.uid }
+        { uid: product.uid , type:true }
       );
       if (response.status === 201) {
         console.log("Deleted Successfully!");
@@ -53,7 +54,11 @@ const ProductItems = (props) => {
 
   const handleProductPage = (e) => {
     // e.stopPropagation()
-    isModalOpen !== true && navigate(`/productpage/${product.uid}`);
+    console.log(props?.display);
+    if(props?.display !== "Your Products" && props?.display !== "Draft") {
+      isModalOpen !== true && navigate(`/productpage/${product.uid}`);
+    }
+    
   };
 
   const handleInfo = (e) => {
@@ -69,6 +74,24 @@ const ProductItems = (props) => {
 
     // showModal(e);
   };
+
+  const handleStock = async (e) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/product/delete",
+        { uid: product.uid , type:false }
+      );
+      if (response.status === 201) {
+        console.log("Deleted Successfully!");
+        setStock(!stock)
+        // setDeleteProduct((prevValues) => !prevValues);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  console.log(product)
 
   return (
     <div onClick={handleProductPage} className="handleProduct">
@@ -189,21 +212,34 @@ const ProductItems = (props) => {
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[]}
-        width={info ? 700 : 1000}
+        width={info ? 500 : 1000}
       >
         {info ? (
-          <div className="productInfoContainer">
-            <div className="productInfoImage">
+          <div className="infoContainer">
+            <div className="infoImage">
               <img
                 src={`http://localhost:8000/Products/${product.imgUrl[0]}`}
                 alt="#"
               />
+               <img
+                src={`http://localhost:8000/Products/${product.imgUrl[0]}`}
+                alt="#"
+              />
+               <img
+                src={`http://localhost:8000/Products/${product.imgUrl[0]}`}
+                alt="#"
+              />
+               <img
+                src={`http://localhost:8000/Products/${product.imgUrl[0]}`}
+                alt="#"
+              />
             </div>
-            <div className="productInfoItems">
-              <p>Product Name : <span>{product?.name}</span></p>
-              <p>Product Price : <span>{product?.price}</span></p>
-              <p>Units Sold : <span>{product?.units}</span></p>
-              <p>Total Sales : <span>{product?.sales}</span></p>
+            <div className="infoItems">
+              <p><span>Product Name</span>  : <span className="span">{product?.name}</span></p>
+              <p><span>Product Price</span> : <span className="span">{product?.price}</span></p>
+              <p><span>Units Sold</span>    : <span className="span">{product?.units}</span></p>
+              <p><span>Total Sales</span>   : <span className="span">{product?.sales}</span></p>
+              <p><span>Stock</span>         : <span className="span" ><button className={stock ? "stockButtonGreen" : "stockButtonRed"} onClick={handleStock}>{stock===true ? " In stock" : "Out of stock"}</button></span></p>
             </div>
           </div>
         ) : (

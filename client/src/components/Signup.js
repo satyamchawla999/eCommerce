@@ -17,6 +17,7 @@ const Signup = () => {
   const [api, contextHolder] = notification.useNotification();
   const Navigate = useNavigate();
   const dispatch = useDispatch();
+  const [buttonDisable,setButtonDisable] = useState(false);
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({ message: message });
@@ -27,20 +28,26 @@ const Signup = () => {
   };
 
   const authRegistration = async () => {
-    const response = await signInWithGoogle();
-    if (response?.status === 201) {
-      openNotificationWithIcon("success", "Sign in successful!");
-
-      setTimeout(() => {
-        dispatch(setUser());
-        dispatch(setUserData(response.data));
-        console.log("hello");
-      }, 1000);
+    try {
+      const response = await signInWithGoogle();
+      if (response?.status === 201) {
+        openNotificationWithIcon("success", "Sign in successful!");
+  
+        setTimeout(() => {
+          dispatch(setUser());
+          dispatch(setUserData(response.data));
+        }, 500);
+      }
+    } catch(err) {
+      console.log(err);
+      openNotificationWithIcon("error", "Unable to sign up");
     }
+    
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setButtonDisable(true)
     let { name, USERID, password } = e.target;
     name = name.value;
     USERID = USERID.value;
@@ -56,6 +63,7 @@ const Signup = () => {
 
     if (!name || !USERID || !password) {
       openNotificationWithIcon("error", "Please enter all credentials");
+      setButtonDisable(false)
       return;
     }
 
@@ -77,22 +85,36 @@ const Signup = () => {
     } else {
       // Email is not in a valid format
       openNotificationWithIcon("error", "Please enter a valid email address or phone number");
+      setButtonDisable(false)
       return;
     }
 
-    const response = await registerWithEmailAndPassword(name, email, phone, password, role);
-    if (response) {
-      dispatch(setUser());
-      dispatch(setUserData(response));
-      openNotificationWithIcon("success", "Sign in successful!");
-      Navigate("/");
-    } else {
+    try {
+      const response = await registerWithEmailAndPassword(name, email, phone, password, role);
+      if (response) {
+  
+        openNotificationWithIcon("success", "Sign in successful!");
+        setTimeout(() => {
+          dispatch(setUser());
+          dispatch(setUserData(response));
+          setButtonDisable(false)
+          Navigate("/");
+        },500)
+  
+      } else {
+        openNotificationWithIcon("error", "Email already in use");
+      }
+    } catch(err) {
+      console.log(err);
       openNotificationWithIcon("error", "Email already in use");
     }
+
+    
 
     e.target.name.value = "";
     e.target.password.value = "";
     e.target.USERID.value = "";
+    setButtonDisable(false)
   };
 
   const handleChange = (event) => {
@@ -133,7 +155,7 @@ const Signup = () => {
             <Radio value={"Customer"}>Customer</Radio>
             <Radio value={"Vendor"}>Vendor</Radio>
           </Radio.Group>
-          <button>SIGN UP</button>
+          <button disabled={buttonDisable}>{buttonDisable === true ? "SINGING UP... ": "SIGN UP" }</button>
         </form>
         <p>
           Already have an account? <Link to="/signin">Sign in</Link>

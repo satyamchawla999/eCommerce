@@ -66,23 +66,29 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+const ProductPage = () => {
   const { id } = useParams();
   const [selectedColor, setSelectedColor] = useState(dummyData.colors[0]);
   const [selectedSize, setSelectedSize] = useState(dummyData.sizes[2]);
   const [product, setProduct] = useState({});
   const [img, setImg] = useState({});
-  const [cartUpdate,setCartUpdate] = useState(false)
+  const [cartUpdate, setCartUpdate] = useState(false)
   const [api, contextHolder] = notification.useNotification();
+  const [stock, setStock] = useState(true)
+
 
 
   const userData = useSelector((state) => state.userData);
+  const user = useSelector((state) => state.user);
+
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({
       message: message,
     });
   };
+
+  // console.log(product)
 
   const [quantity, setQuantity] = useState(1);
   useEffect(() => {
@@ -96,6 +102,7 @@ export default function Example() {
         if (response.status === 201) {
           setProduct(getValues(response.data));
           setImg(getImages(response.data));
+          setStock(response.data.stock)
         }
       } catch (err) {
         console.log(err);
@@ -105,10 +112,10 @@ export default function Example() {
     getProduct();
   }, [cartUpdate]);
 
- 
+
 
   const handleIncrement = () => {
-    if(quantity < 10) {
+    if (quantity < 10) {
       setQuantity(quantity + 1);
     }
   };
@@ -121,13 +128,17 @@ export default function Example() {
 
   const handleCart = async (e) => {
     e.preventDefault()
+    if(!user) {
+      openNotificationWithIcon("error", "Please login first");
+      return;
+    }
 
 
     const data = {
       uid: userData.uid,
       pUid: id,
       quantity: quantity,
-      update:false
+      update: false
     }
 
     console.log(data);
@@ -145,9 +156,10 @@ export default function Example() {
       console.log(err);
     }
   };
+
   return (
     <div className="bg-white">
-            {contextHolder}
+      {contextHolder}
       <div className="pt-6">
         {/* Image gallery */}
         <div className="mx-auto mt-6 max-w-2xl sm:px-6 lg:grid lg:max-w-7xl lg:grid-cols-3 lg:gap-x-8 lg:px-8">
@@ -195,7 +207,8 @@ export default function Example() {
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
             <p className="text-3xl tracking-tight text-gray-900">
-              Rs {product?.price}
+              {stock === true ? <> Rs {product?.price}</> : <> Out of Stock</>}
+
             </p>
 
             {/* Reviews */}
@@ -269,7 +282,7 @@ export default function Example() {
                 </RadioGroup>
               </div>
 
-              
+
               {/* Sizes */}
               <div className="mt-10">
                 <div className="flex items-center justify-between">
@@ -350,20 +363,24 @@ export default function Example() {
                   </div>
                 </RadioGroup>
               </div>
-              <p style={{ marginTop: "30px" }}>Add Quantity</p>
-              <div className="qtyBtn">
-                <span className="qtyBtn" onClick={handleDecrement}>-</span>
-                &nbsp;{quantity}&nbsp;
-                <span className="qtyBtn" onClick={handleIncrement}>+</span>
-              </div>
 
-              <button
-                onClick={handleCart}
-                type="submit"
-                className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-gray-900 px-8 py-3 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Add To Cart &nbsp; <i class="fa-brands fa-opencart"></i>
-              </button>
+
+              {stock && <>
+                <p style={{ marginTop: "30px" }}>Add Quantity</p> <div className="qtyBtn">
+                  <span className="qtyBtn" onClick={handleDecrement}>-</span>
+                  &nbsp;{quantity}&nbsp;
+                  <span className="qtyBtn" onClick={handleIncrement}>+</span>
+                </div>
+
+                <button
+                  onClick={handleCart}
+                  type="submit"
+                  className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-gray-900 px-8 py-3 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                  Add To Cart &nbsp; <i class="fa-brands fa-opencart"></i>
+                </button>
+              </>}
+
             </form>
           </div>
 
@@ -406,3 +423,5 @@ export default function Example() {
     </div>
   );
 }
+
+export default ProductPage;

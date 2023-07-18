@@ -16,7 +16,7 @@ const Cart = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
   const [cartQuantity, setCartQuantity] = useState(0);
-  const [delivery, setDelivery] = useState(200);
+  const [delivery, setDelivery] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(discount + delivery + cartTotal)
   const [cartInfo, setCartInfo] = useState(false);
@@ -42,6 +42,7 @@ const Cart = () => {
           const getDetails = () => {
             data.forEach((item) => {
               let price = parseInt(item.product.price) * parseInt(item.quantity)
+              quantity = quantity + parseInt(item.quantity)
               sum = sum + price;
             })
             return { sum, quantity };
@@ -52,6 +53,7 @@ const Cart = () => {
           setCartItems(response.data);
           setCartQuantity(details.quantity)
           setCartTotal(details?.sum);
+          setDelivery(details.quantity === 0 ? 0 :200)
           const d = details?.sum*0.25
           if(couponData === "FREEDEL") {
             setDelivery(0)
@@ -102,7 +104,8 @@ const Cart = () => {
     }
   }
 
-  const handleItemDelete = async (index) => {
+  const handleItemDelete = async (index,qty) => {
+    setCartQuantity( Math.abs(cartQuantity-qty))
     try {
       const response = await axios.post(
         "http://localhost:8000/user/delete-items", { uid: userData.uid, index: index, type: "cart" }

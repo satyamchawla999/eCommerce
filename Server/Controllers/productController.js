@@ -132,7 +132,14 @@ module.exports.deleteProduct = async (req, res) => {
   try {
     let product = await Product.findOne({ uid: req.body.uid });
     if (product) {
-      await Product.deleteOne({ uid: req.body.uid }); 
+      if(req.body.type === true) {
+        await Product.deleteOne({ uid: req.body.uid }); 
+      } else {
+        product.stock = !product.stock;
+        product.markModified("stock");
+        product.save(); 
+      }
+     
       return res.status(201).send("Deleted Successfully!");
     } else {
       res.statusMessage = "Product not found"; 

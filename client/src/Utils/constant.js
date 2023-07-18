@@ -31,12 +31,16 @@ export const getImages = (product) => {
 
 export const getUserImages = (user) => {
     let data = {}
-    if(Object.keys(user).length !== 0) {
-        data = {
-            image1: (user && user?.imgUrl[0] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[0]) : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/1200px-Missing_avatar.svg.png"),
-            image2: (user && user?.imgUrl[1] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[1]) : "https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"),
+    if (Object.keys(user).length === 0) {
+        user = {
+            imgUrl: ["NA", "NA"]
         }
     }
-    
+    data = {
+        image1: (user?.imgUrl[0] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[0]) : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/1200px-Missing_avatar.svg.png"),
+        image2: (user?.imgUrl[1] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[1]) : "https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"),
+    }
+
+
     return data;
 }

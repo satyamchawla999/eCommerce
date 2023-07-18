@@ -43,9 +43,9 @@ const Products = (props) => {
 
             {type !== "orders" && products.map(
               (product) =>
-                product?.vUid === userData.uid || userData.role === "Admin" && (draft === false ?
-                  product?.draft === false && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} /> :
-                  product?.draft === true && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} />
+                (product?.vUid === userData.uid || userData?.role === "Admin") && (draft === false ?
+                  product?.draft === false && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} display={display} /> :
+                  product?.draft === true && <ProductItems key={product.uid} product={product} setDeleteProduct={setDeleteProduct} display={display} />
                 )
             )}
             

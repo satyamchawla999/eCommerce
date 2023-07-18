@@ -16,6 +16,7 @@ const Signin = () => {
   const dispatch = useDispatch();
   const [value, setValue] = useState("");
   const inputRef = useRef(null);
+  const [buttonDisable, setButtonDisable] = useState(false);
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({
@@ -24,19 +25,28 @@ const Signin = () => {
   };
 
   const authRegistration = async () => {
-    const response = await signInWithGoogle();
-    if (response?.status === 201) {
-      openNotificationWithIcon("success", "Sign in successful!");
-
-      setTimeout(() => {
-        dispatch(setUser());
-        dispatch(setUserData(response.data));
-      }, 1000);
+    setButtonDisable(true)
+    try {
+      const response = await signInWithGoogle();
+      if (response?.status === 201) {
+        openNotificationWithIcon("success", "Sign in successful!");
+  
+        setTimeout(() => {
+          dispatch(setUser());
+          dispatch(setUserData(response.data));
+        }, 500);
+      }
+    } catch(err) {
+      console.log(err);
+      openNotificationWithIcon("error", "Unable to sign up");
     }
+    setButtonDisable(false)
   };
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setButtonDisable(true)
 
     let { USERID, password } = e.target;
 
@@ -48,6 +58,7 @@ const Signin = () => {
 
     if (!USERID || !password) {
       openNotificationWithIcon("error", "Please Enter All Credentials");
+      setButtonDisable(false)
       return;
     }
 
@@ -69,7 +80,9 @@ const Signin = () => {
     } else {
       // Email is not in a valid format
       openNotificationWithIcon("error", "Please enter a valid email address");
+      setButtonDisable(false)
       return;
+
     }
 
     try {
@@ -77,24 +90,27 @@ const Signin = () => {
 
       if (response.status === 201) {
         openNotificationWithIcon("success", "Sign in successfull!");
-  
+
         setTimeout(() => {
           dispatch(setUser());
           dispatch(setUserData(response.data));
-        }, 1000);
-      } else if(response.status === 204) {
+          setButtonDisable(false)
+        }, 500);
+      } else if (response.status === 204) {
         openNotificationWithIcon("error", "Account is disabled, please contact admin");
       } else {
         openNotificationWithIcon("error", "User not found");
       }
 
-    } catch(err) {
+    } catch (err) {
       console.log(err);
+      openNotificationWithIcon("error", "User not found");
     }
-    
+
 
     e.target.password.value = "";
     e.target.USERID.value = "";
+    setButtonDisable(false)
   };
 
   const handleChange = (event) => {
@@ -118,7 +134,6 @@ const Signin = () => {
           <label>EMAIL OR PHONE NUMBER</label>
           <input
             name="USERID"
-            ref={inputRef}
             type="text"
             value={value}
             onChange={handleChange}
@@ -127,7 +142,7 @@ const Signin = () => {
           <label>PASSWORD</label>
           <input name="password" type="password" />
 
-          <button>SIGN IN</button>
+          <button disabled={buttonDisable}>{buttonDisable === true ? "SINGING IN... " : "SIGN IN"}</button>
         </form>
 
         <Link to="/signup">

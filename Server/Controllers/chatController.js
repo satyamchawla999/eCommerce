@@ -2,31 +2,33 @@ const Chat = require("../Model/chat");
 const User = require("../Model/users");
 
 module.exports.getMessages = async (req, res) => {
-    console.log(req.body,"hello")
-    const {uid} = req.body;
-    
+    console.log(req.body, "hello")
+    const { uid } = req.body;
+
     try {
-        let admin = await User.findOne({role:"Admin"});
-        let user =  await User.findOne({uid:uid});
-        let chatId = String(admin.uid) + String(user.uid);
+        let admin = await User.findOne({ role: "Admin" });
+        let user = await User.findOne({ uid: uid });
+        let chatId = admin.uid + user.uid;
 
-        let chatroom = await Chat.findOne({chatId:chatId});
+        let chatroom = await Chat.findOne({ chatId: chatId });
 
-        if(!chatroom) {
+        if (!chatroom) {
             const data = {
-                chatId:chatId,
-                cName:user.name,
-                aName:admin.name,
-                aUid:admin.uid,
-                cUid:user.uid,
+                chatId: chatId,
+                imgUrl:user.imgUrl,
+                USERID:user.email !== "NA" ? user.email : user.phone,
+                cName: user.name,
+                aName: admin.name,
+                aUid: admin.uid,
+                cUid: user.uid,
             }
             chatroom = await Chat.create(data);
-            return res.status(201).send(chatroom.messages);
-        } else {
-            return res.status(201).send(chatroom.messages);
+            console.log("chatroom created",chatroom)
         }
-       
-       
+        
+        return res.status(201).send(chatroom.messages);
+
+
     } catch (err) {
         console.error(err);
         res.statusMessage = "An error occurred.";
@@ -35,23 +37,23 @@ module.exports.getMessages = async (req, res) => {
 }
 
 module.exports.sendMessage = async (req, res) => {
-    const {uid,sender} = req.body;
+    const { uid, sender } = req.body;
     console.log("hello admin")
-    
+
     try {
-        let admin = await User.findOne({role:"Admin"});
-        let user =  await User.findOne({uid:uid});
-        let chatId = String(admin.uid) + String(user.uid);
+        let admin = await User.findOne({ role: "Admin" });
+        let user = await User.findOne({ uid: uid });
+        let chatId = admin.uid + user.uid;
 
         console.log("admin",);
         console.log("user",);
-        console.log("chatId",chatId)
+        console.log("chatId", chatId)
 
-        let chatroom = await Chat.findOne({chatId:chatId});
+        let chatroom = await Chat.findOne({ chatId: chatId });
 
-        if(chatroom) {
+        if (chatroom) {
             console.log("hello chat room")
-            if(sender === "Admin") {
+            if (sender === "Admin") {
                 req.body.uid = admin.uid;
             }
             chatroom?.messages.push(req.body);
@@ -62,8 +64,8 @@ module.exports.sendMessage = async (req, res) => {
         } else {
             return res.status(204).send("order placed");
         }
-       
-       
+
+
     } catch (err) {
         console.error(err);
         res.statusMessage = "An error occurred.";
@@ -72,17 +74,18 @@ module.exports.sendMessage = async (req, res) => {
 }
 
 module.exports.getChatUsers = async (req, res) => {
-    
+
     try {
         let chatroom = await Chat.find({});
+        console.log(chatroom, "admin chat")
 
-        if(chatroom) {
+        if (chatroom) {
             return res.status(201).send(chatroom);
         } else {
             return res.status(204).send("order placed");
         }
-       
-       
+
+
     } catch (err) {
         console.error(err);
         res.statusMessage = "An error occurred.";

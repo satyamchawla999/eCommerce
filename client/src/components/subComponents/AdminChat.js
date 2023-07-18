@@ -2,14 +2,17 @@ import React, { useEffect, useState } from "react";
 import "../../assets/styles/adminChat.scss";
 import { useSelector } from "react-redux";
 import { Chat } from "../subComponents";
+import { getUserImages } from "../../Utils/constant"
 import axios from "axios";
 
 const AdminChat = () => {
   const [display, setDisplay] = useState("Profile");
   const [users, setUsers] = useState([]);
   const [uid, setUid] = useState("");
+  const [data, setData] = useState({});
 
   const userData = useSelector((state) => state.userData);
+  const [img,setImg] = useState(getUserImages(userData))
 
   useEffect(() => {
     const getChatUsers = async () => {
@@ -29,16 +32,17 @@ const AdminChat = () => {
     getChatUsers();
   }, [display]);
 
-  const handleDisplay = (value,uid) => {
+  const handleDisplay = (value, uid, name, image) => {
     setDisplay(value);
-    setUid(uid)
+    setUid(uid);
+    setData({ uid, name, image })
   };
 
   return (
     <div className="adminChat">
       <div className="profileInfo">
         <div className="profileImage">
-          <img src="" />
+          <img src={img?.image1} />
           <p>
             {userData?.name}
             <br />
@@ -46,18 +50,25 @@ const AdminChat = () => {
           </p>
         </div>
 
-        {users.map((user) => (
-          <div
+        {users.map((user) => {
+          const image = getUserImages({ imgUrl: user?.imgUrl }).image1
+          return <div
             className={`customerInfoItems ${display === user?.cName && "toggel"}`}
-            onClick={() => handleDisplay("Profile",user.cUid)}
+            onClick={() => handleDisplay("Profile", user.cUid, user.cName, image)}
           >
-            {user?.cName}
+            <img src={image} alt="" />
+
+            <div>
+              <p>{user?.cName}</p>
+              <p style={{ fontSize: "12px" }}>{user?.USERID}</p>
+            </div>
+
           </div>
-        ))}
+        })}
       </div>
 
       <div className="chatSection">
-        {uid !== "" && <Chat uid={uid}/>}
+        {uid !== "" && <Chat uid={uid} data={data} />}
       </div>
     </div>
   );

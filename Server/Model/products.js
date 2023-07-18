@@ -57,6 +57,10 @@ const productSchema = new mongoose.Schema(
     draft: {
       type: Boolean,
       required: true,
+    },
+    stock: {
+      type: Boolean,
+      default: true,
     }
   },
   {
