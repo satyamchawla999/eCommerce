@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal } from "antd";
 import { ModalData } from "./";
 import { useSelector } from "react-redux";
+import { notification} from "antd";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
@@ -10,17 +11,22 @@ const ProductItems = (props) => {
   const userData = useSelector((state) => state.userData);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [productPage, setProductPage] = useState(false);
   const [info, setInfo] = useState(false);
   const [options, setOptions] = useState(false);
   const [stock,setStock] = useState(product?.stock)
+  const [productPageUpdate, setProductPageUpdate] = useState(false);
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotificationWithIcon = (type, message) => {
+    api[type]({ message: message });
+  };
 
   const navigate = useNavigate();
 
   useEffect(() => {
     // setDeleteProduct((prevValues) => !prevValues);
     console.log("updated")
-  }, [productPage])
+  }, [productPageUpdate])
 
   const showModal = (e) => {
     e.stopPropagation();
@@ -46,6 +52,8 @@ const ProductItems = (props) => {
       if (response.status === 201) {
         console.log("Deleted Successfully!");
         setDeleteProduct((prevValues) => !prevValues);
+        openNotificationWithIcon("success", "Product Deleted Successfully");
+
       }
     } catch (err) {
       console.log(err);
@@ -95,6 +103,7 @@ const ProductItems = (props) => {
 
   return (
     <div onClick={handleProductPage} className="handleProduct">
+      {contextHolder}
       <div className="group relative">
         <div className="aspect-h-1 aspect-w-1 w-full overflow-hidden rounded-md bg-gray-200 lg:aspect-none group-hover:opacity-75 lg:h-80">
           <img
@@ -244,7 +253,7 @@ const ProductItems = (props) => {
           </div>
         ) : (
           // <ModalData product={product} handleCancel={handleCancel} setProductPage={setProductPage}/>
-          <ModalData product={product} handleCancel={handleCancel} setProductPage={setProductPage} />
+          <ModalData product={product} handleCancel={handleCancel} setProductPageUpdate={setProductPageUpdate} />
         )}
       </Modal>
     </div>

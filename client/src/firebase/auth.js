@@ -30,12 +30,12 @@ const signInWithGoogle = async () => {
       email: user.email,
       phone: "NA",
       password: "NA",
-      imgUrl: ["NA","NA"],
-      role:"0",
+      imgUrl: ["NA", "NA"],
+      role: "0",
       authProvider: "Google",
-      gNo:"NA",
-      bName:"NA",
-      bType:"NA",
+      gNo: "NA",
+      bName: "NA",
+      bType: "NA",
     };
 
     const response = await axios.post(
@@ -46,9 +46,10 @@ const signInWithGoogle = async () => {
     if (response.status === 201) {
       return response;
     } else {
-      return;
+      return {};
     }
   } catch (err) {
+    console.log("==== response error ====> ", err)
     console.error(err);
   }
 };
@@ -56,7 +57,7 @@ const signInWithGoogle = async () => {
 // MANUAL SIGN IN AND ADDING USER TO DATABASE WITH QUERY AND ADDDOCS
 const logInWithEmailAndPassword = async (email, phone, password) => {
   try {
-    
+
     const data = {
       email: email,
       phone: phone,
@@ -73,7 +74,7 @@ const logInWithEmailAndPassword = async (email, phone, password) => {
 
   } catch (err) {
     console.error(err);
-    return {status:409}
+    return { status: 409 }
   }
 };
 
@@ -84,7 +85,7 @@ const registerWithEmailAndPassword = async (name, email, phone, password, role) 
     let res = {};
     let user = {};
 
-    if(email !== "NA") {
+    if (email !== "NA") {
       res = await createUserWithEmailAndPassword(auth, email, password);
       user = res.user;
       await updateProfile(user, { displayName: name });
@@ -99,12 +100,12 @@ const registerWithEmailAndPassword = async (name, email, phone, password, role) 
       email: email,
       phone: phone,
       password: password,
-      imgUrl: ["NA","NA"],
+      imgUrl: ["NA", "NA"],
       role: role,
       authProvider: "Manual",
-      gNo:"NA",
-      bName:"NA",
-      bType:"NA",
+      gNo: "NA",
+      bName: "NA",
+      bType: "NA",
     };
 
     const response = await axios.post(
@@ -119,7 +120,7 @@ const registerWithEmailAndPassword = async (name, email, phone, password, role) 
     }
   } catch (err) {
     console.error(err);
-    
+
   }
 };
 

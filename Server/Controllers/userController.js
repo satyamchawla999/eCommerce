@@ -286,6 +286,7 @@ module.exports.updateProfile = async (req, res) => {
   const files = req.files;
 
   if (req.body.password === "" || req.body?.newPassword === "") {
+    console.log("yes")
     delete req.body["password"];
     delete req.body["newPassword"];
   }
@@ -301,11 +302,13 @@ module.exports.updateProfile = async (req, res) => {
         message: "Existed!"
       }
 
+      console.log("phone/email")
+
       return res.status(201).send(newData);
 
     } else {
       let user = await User.findOne({ uid: req.body.uid });
-      console.log(req.body)
+      console.log("yes yes",req.body.uid)
       if (user) {
 
         let imgUrl = [
@@ -314,12 +317,15 @@ module.exports.updateProfile = async (req, res) => {
         ];
 
         let message = "updated";
+        let checked = true;
         if (user.password !== "NA" && user.password === req.body?.password) {
           req.body.password = req.body?.newPassword;
           delete req.body["newPassword"];
+          checked = false
         }
 
-        if (user.password !== req.body?.password && req.body?.password) {
+        if (user.password !== req.body?.password && req.body?.password && checked) {
+          console.log(user.password , "and" ,req.body?.password )
           message = "Password not matched!"
         }
 
@@ -341,7 +347,7 @@ module.exports.updateProfile = async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err);
+    console.error(err,"*******");
     res.statusMessage = "An error occurred while creating the user.";
     return res.status(500).end();
   }

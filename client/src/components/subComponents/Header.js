@@ -31,7 +31,7 @@ const Header = () => {
     await logout();
     // setUserData({})
     dispatch(deleteUser());
-    navigate("/signup");
+    navigate("/signin");
   };
 
   const handleClick = async (category, subCategory) => {

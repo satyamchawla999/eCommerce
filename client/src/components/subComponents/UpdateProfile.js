@@ -28,7 +28,7 @@ const UpdateProfile = (props) => {
 
   const [update, setUpdate] = useState(false);
 
-  // useEffect(()=>{
+  useEffect(()=>{
   //   const getUser = async ()=>{
   //     try {
   //       const response = await axios.post("http://localhost:8000/user/get-user",{uid:userData.uid})
@@ -41,7 +41,7 @@ const UpdateProfile = (props) => {
   //   }
 
   //   getUser();
-  // },[update])
+  },[update])
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,7 +69,9 @@ const UpdateProfile = (props) => {
           } else {
             openNotificationWithIcon("success", "Profile Updated Successfully!");
           }
+          
         }
+        setUpdate(!update)
 
       } else {
         openNotificationWithIcon("error", "Please Try Again");
@@ -78,6 +80,8 @@ const UpdateProfile = (props) => {
       console.error("Error submitting form data:", err);
     }
     // handleCancel();
+    e.target.password.value = "";
+    e.target.newPassword.value = "";
   };
 
   const handleChange = (e) => {
