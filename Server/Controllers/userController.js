@@ -91,14 +91,20 @@ module.exports.signIn = async (req, res) => {
       user = await User.findOne({ phone: phone });
     }
 
-    if (user && user.password === password) {
-      if (user.validation === true) {
-        return res.status(201).send(user);
+    if (user) {
+      if(user.password === password) {
+        if (user.validation === true) {
+          return res.status(201).send(user);
+        } else {
+          res.statusMessage = "Your Account is Disabled";
+          return res.status(204).end();
+        }
       } else {
-        res.statusMessage = "Your Account is Disabled";
-        return res.status(204).end();
+        console.log("Password wrong")
+        return res.status(206).end();
       }
     } else {
+      console.log("Hello not present")
       res.statusMessage = "User Not Present";
       return res.status(409).end();
     }

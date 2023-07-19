@@ -98,7 +98,10 @@ const Signin = () => {
         }, 500);
       } else if (response.status === 204) {
         openNotificationWithIcon("error", "Account is disabled, please contact admin");
-      } else {
+      } else if (response.status === 206){
+        openNotificationWithIcon("error", "Wrong Password");
+      }
+      else {
         openNotificationWithIcon("error", "User not found");
       }
 

@@ -1,27 +1,18 @@
-import { auth, googleProvider, db } from "./firebase";
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import { auth, googleProvider } from "./firebase";
 
 import {
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut,
   updateProfile,
+  signInWithPopup,
+  createUserWithEmailAndPassword,
 } from "firebase/auth";
-
-import {
-  query,
-  getDocs,
-  collection,
-  where,
-  addDoc,
-  updateDoc,
-} from "firebase/firestore";
 
 const signInWithGoogle = async () => {
   try {
     const res = await signInWithPopup(auth, googleProvider);
+
     const user = res.user;
 
     const data = {
@@ -46,11 +37,12 @@ const signInWithGoogle = async () => {
     if (response.status === 201) {
       return response;
     } else {
+      console.log("auth else")
       return {};
     }
   } catch (err) {
-    console.log("==== response error ====> ", err)
-    console.error(err);
+    console.log("hello hello hello")
+    console.log(err);
   }
 };
 

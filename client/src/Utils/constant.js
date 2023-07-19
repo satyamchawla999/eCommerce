@@ -1,6 +1,7 @@
 export const BASE_IMG_URL = "http://localhost:8000/Products/";
 export const BASE_USER_IMG_URL = "http://localhost:8000/Users/";
 
+export const logo = "https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"
 
 export const getValues = (product) => {
 
@@ -40,7 +41,32 @@ export const getUserImages = (user) => {
         image1: (user?.imgUrl[0] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[0]) : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Missing_avatar.svg/1200px-Missing_avatar.svg.png"),
         image2: (user?.imgUrl[1] !== "NA" ? (BASE_USER_IMG_URL + user?.imgUrl[1]) : "https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547"),
     }
-
-
     return data;
 }
+
+export const callouts = [
+    {
+      name: '',
+      description: 'Women Collection',
+      imageSrc: require("../assets/images/women.png"),
+      imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
+      href: '#',
+      value: "female"
+    },
+    {
+      name: '',
+      description: 'Latest Collection',
+      imageSrc: 'https://i.pinimg.com/originals/c7/09/ac/c709acb1309dfcccc6aa0d67a90a316c.jpg',
+      imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
+      href: '#',
+      value: "all"
+    },
+    {
+      name: '',
+      description: 'Men Collection',
+      imageSrc: require("../assets/images/man.png"),
+      imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
+      href: '#',
+      value: "male"
+    },
+  ]

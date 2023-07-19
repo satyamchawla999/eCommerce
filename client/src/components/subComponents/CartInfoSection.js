@@ -18,7 +18,7 @@ const CartInfoSection = (props) => {
     console.log(cartQuantity, "total cartQuantity")
 
     const dispatch = useDispatch()
-    // const [couponData,setCouponData] = useState(useSelector((state) => state.coupon))
+    const [displayCoupon, setDisplayCoupon] = useState("");
 
     const [orderTotal, setOrderTotal] = useState(0)
     const [delivery, setDelivery] = useState(cartQuantity === 0 ? 0 : props.delivery);
@@ -38,12 +38,14 @@ const CartInfoSection = (props) => {
 
 
 
+
+
     const showModal = () => {
         if (cartQuantity === 0) {
             openNotificationWithIcon("error", "Cart is Empty!");
             return;
         } else {
-            setIsModalOpen(true); 
+            setIsModalOpen(true);
         }
     }
 
@@ -54,26 +56,32 @@ const CartInfoSection = (props) => {
         setOrderTotal(total)
     }, [total, Coupon]);
 
-    const handleCoupon = () => {
+    const handleCoupon = (e) => {
+        e.preventDefault()
 
         const value = Coupon.current.value;
         let discount = props.discount;
         let delivery = props.delivery
+        
         if (value === "FREEDEL") {
-            const data = { coupon: "FREEDEL" }
-            dispatch(setCoupon(data));
+            // const data = { coupon: "FREEDEL" }
+            // dispatch(setCoupon(data));
             setDiscount(0);
             setDelivery(0);
             delivery = 0;
             discount = 0;
-        }
-
-        if (value === "EPIC" && cartTotal >= 2589) {
-            const data = { coupon: "EPIC" }
-            dispatch(setCoupon(data));
+            setCouponData("FREEDEL")
+            setDisplayCoupon(value)
+        } else if (value === "EPIC" && cartTotal >= 2589) {
+            // const data = { coupon: "EPIC" }
+            // dispatch(setCoupon(data));
             setDiscount(total * 0.25);
             setDelivery(200);
             discount = total * 0.25;
+            setCouponData("EPIC")
+            setDisplayCoupon(value)
+        } else {
+            openNotificationWithIcon("error", "Invalid Coupon");
         }
 
         setOrderTotal(cartTotal + delivery - (discount))
@@ -159,6 +167,17 @@ const CartInfoSection = (props) => {
 
     }
 
+    const handleInputChange = (e)=>{
+        console.log(e.target.value)
+        setCouponData(e.target.value)
+        if(e.target.value==="") {
+            setOrderTotal(cartTotal + 200);
+            setDelivery(200);
+            setDiscount(0)
+            setDisplayCoupon("")
+        }
+    }
+
 
     return (
         <div className="cartInfoSection">
@@ -186,9 +205,20 @@ const CartInfoSection = (props) => {
             </div>
 
             {page !== "checkout" && <div className="orderDetailItems">
-                <input name="applyCoupon" placeholder="Apply Coupon" onChange={(e) => setCouponData(e.target.value)} value={couponData} ref={Coupon} />
-                <button onClick={handleCoupon}>Apply</button>
+                <form>
+                    <input name="applyCoupon"  placeholder="Apply Coupon" onChange={handleInputChange} value={couponData} ref={Coupon} />
+                    <button onClick={handleCoupon}>Apply</button>
+                </form>
+
+
             </div>}
+
+            {displayCoupon !== "" && <p style={{width:"100%",color:"red",textAlign:"center",padding:"0"}}>
+                {displayCoupon} is applied
+            </p>}
+
+
+
 
             {page !== "checkout" ?
                 <div className="orderDetailItems">

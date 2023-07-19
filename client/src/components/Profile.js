@@ -50,19 +50,19 @@ const Profile = () => {
         {userData.role !== "Customer" && (
           <>
             <div
-              className={`profileInfoItems ${
-                display === "Your Products" && toggel
-              }`}
+              className={`profileInfoItems ${display === "Your Products" && toggel
+                }`}
               onClick={() => handleDisplay("Your Products")}
             >
               Your Products
             </div>
-            <div
+            {userData.role !== "Admin" && <div
               className={`profileInfoItems ${display === "Draft" && toggel}`}
               onClick={() => handleDisplay("Draft")}
             >
               Draft
-            </div>
+            </div>}
+
           </>
         )}
 
@@ -82,9 +82,8 @@ const Profile = () => {
         )}
         {userData.role === "Admin" && (
           <div
-            className={`profileInfoItems ${
-              display === "Vendor List" && toggel
-            }`}
+            className={`profileInfoItems ${display === "Vendor List" && toggel
+              }`}
             onClick={() => handleDisplay("Vendor List")}
           >
             Vendor List
@@ -150,7 +149,7 @@ const Profile = () => {
         )}
         {display === "Chat" && (
           <>
-            <Chat  uid={userData.uid}/>
+            <Chat uid={userData.uid} />
           </>
         )}
       </div>

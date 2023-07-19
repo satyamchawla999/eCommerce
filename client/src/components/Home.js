@@ -1,119 +1,75 @@
-import axios from "axios";
-import { Modal } from "antd";
+import { Modal, notification, Radio } from "antd";
 import React, { useEffect, useState } from "react";
-import { notification, Radio } from "antd";
-import { ProductItems } from "./subComponents";
-import { setUserData, setUser } from "../features/user/userSlice";
 import { useSelector, useDispatch } from "react-redux";
+
 import { useNavigate } from "react-router-dom";
+import { ProductItems } from "./subComponents";
+import { callouts, logo } from "../Utils/constant";
+import { setUserData, setUser } from "../features/user/userSlice";
+import { getProductsFromDB, setUserRole } from "../Utils/service";
+
 import "../assets/styles/home.scss"
 
-const callouts = [
-  {
-    name: '',
-    description: 'Women Collection',
-    imageSrc: require("../assets/images/women.png"),
-    imageAlt: 'Desk with leather desk pad, walnut desk organizer, wireless keyboard and mouse, and porcelain mug.',
-    href: '#',
-    value: "female"
-  },
-  {
-    name: '',
-    description: 'Latest Collection',
-    imageSrc: 'https://i.pinimg.com/originals/c7/09/ac/c709acb1309dfcccc6aa0d67a90a316c.jpg',
-    imageAlt: 'Wood table with porcelain mug, leather journal, brass pen, leather key ring, and a houseplant.',
-    href: '#',
-    value: "all"
-  },
-  {
-    name: '',
-    description: 'Men Collection',
-    imageSrc: require("../assets/images/man.png"),
-    imageAlt: 'Collection of four insulated travel bottles on wooden shelf.',
-    href: '#',
-    value: "male"
-  },
-]
-
 const Home = () => {
-  const userData = useSelector((state) => state.userData);
-  const [products, setProducts] = useState([]);
-  const [api, contextHolder] = notification.useNotification();
-  const [role, setRole] = useState("0");
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const userData = useSelector((state) => state.userData);
+
+  const [role, setRole] = useState("0");
+  const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-
-  const showModal = () => setIsModalOpen(true);
-  const handleOk = () => setIsModalOpen(false);
-  const handleCancel = () => setIsModalOpen(false);
-
+  const [api, contextHolder] = notification.useNotification();
 
   useEffect(() => {
-    console.log("new data", products);
-
-    if (userData.role === "0") {
-      showModal()
-    }
+    if (userData.role === "0") showModal()
 
     const getProducts = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/product/get-product"
-        );
-
-        if (response.status === 201) {
-          setProducts(response.data);
-        }
-      } catch (err) {
-        console.log(err);
-      }
+        const response = await getProductsFromDB()
+        if (response.status === 201) setProducts(response.data);
+      } catch (err) { console.log(err); }
     };
-
 
     getProducts();
 
   }, [role]);
 
+  const showModal = () => setIsModalOpen(true);
+  const handleCancel = () => setIsModalOpen(false);
+
   const onChange = async (e) => {
 
-    console.log("radio checked", e.target.value);
-
+    const newRole = e.target.value;
     const data = {
-      role: e.target.value,
+      role: newRole,
       uid: userData?.uid,
     }
 
     try {
-
-      const response = await axios.post(
-        "http://localhost:8000/user/set-user-role", data
-      );
+      const response = await setUserRole(data)
 
       if (response.status === 201) {
         const data = { ...userData, role: response.data }
-        // console.log("new data",products);
         dispatch(setUser());
         dispatch(setUserData(data));
-
-        setRole(e.target.value);
-        handleCancel()
+        setRole(newRole);
+        handleCancel();
       }
-    } catch (err) {
-      console.log(err);
-    }
+
+    } catch (err) { console.log(err); }
 
   };
 
 
   const handleClick = async (value) => {
     // e.stopPropagation();
-    console.log("hey", value);
     const data = {
       category: value,
       subCategory: "All"
     }
+
     navigate({ pathname: "/productcollection" }, { state: data })
   }
 
@@ -121,13 +77,12 @@ const Home = () => {
     <>
       {userData?.role === "0" && <div>
         <Modal
-          open={isModalOpen}
           footer={[]}
+          open={isModalOpen}
         >
           <div className="roleSelector">
-            <img src="https://www.snitch.co.in/cdn/shop/files/blackoption_200x@2x.png?v=1659016547" />
+            <img src={logo} />
             <p>Hey! {userData.name}</p>
-
             <p>Please select role to proceed further</p>
 
             <Radio.Group
@@ -140,7 +95,6 @@ const Home = () => {
               <Radio value={"Vendor"}>Vendor</Radio>
             </Radio.Group>
           </div>
-
         </Modal>
       </div>}
 
@@ -161,7 +115,7 @@ const Home = () => {
                   </div>
                   <h3 className="mt-6 text-sm text-gray-500">
                     <a href={callout.href}>
-                      <span className="absolute inset-0" />
+                      <span className="absolute inset-10" />
                       {callout.name}
                     </a>
                   </h3>
@@ -183,7 +137,6 @@ const Home = () => {
             {products && products?.map((product) => (
               product.vUid !== userData.uid && product.draft === false && <ProductItems product={product} />
             ))}
-
           </div>
         </div>
       </div>

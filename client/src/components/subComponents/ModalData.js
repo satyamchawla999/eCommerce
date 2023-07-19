@@ -46,6 +46,8 @@ const ModalData = (props) => {
     }
     handleCancel();
     props?.setProductPageUpdate((prevValues) => !prevValues);
+
+    // clear form data 
   };
 
   const handleChange = (e) => {

@@ -3,6 +3,7 @@ import axios from "axios";
 import { BASE_IMG_URL } from "../../Utils/constant";
 import { useSelector } from "react-redux";
 import "../../assets/styles/cart.scss";
+// import Product from "../../../../Server/Model/products";
 
 const CartItems = (props) => {
   const {
@@ -21,7 +22,7 @@ const CartItems = (props) => {
     return dateTime;
   };
 
-  const [quantity, setQuantity] = useState(item.quantity);
+  const [quantity, setQuantity] = useState(item.quantity > 10 ? 10 : item.quantity);
   const userData = useSelector((state) => state.userData);
   const itemDate = getOrderDate(item.createdAt).toLocaleDateString();
   const currDate = new Date().getDate();
@@ -30,16 +31,18 @@ const CartItems = (props) => {
 
   let product = {};
   let address = {};
+  let productStatus = "";
 
   if (page !== "orders") {
     product = item?.product;
   } else {
     product = item;
     address = product.address;
+    productStatus = product.status
   }
 
   const max = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-  const status = ["Successful", "Shipped", "Out For Delivery", "Delivered"];
+  const status = ["Successfull", "Shipped", "Out For Delivery", "Delivered"];
 
 
 
@@ -104,21 +107,25 @@ const CartItems = (props) => {
               ))}
             </select>
           ) : (
-            <> {quantity}</>
+            <>{quantity}</>
 
-          )}
+          )}<br/>
+          {item?.quantity > 10 && <span style={{fontSize:"10px"}}>Note : Max limit is 10 per item</span>
+}
+          
         </div>
 
         {page === "orders" && (
           <>
             <br />
             <br />
-            {userData.role === "Customer" || props?.display === "Your Orders" ? (
+            {(userData.role === "Customer" || props?.display === "Your Orders")? (
               <>
                 <span style={{ border: "none", padding: "0px" }}>{product.status}</span>
               </>
 
             ) : (
+              productStatus === "Delivered" ? <span>{product.status}</span> : 
               <span>
                 <select style={{ border: "none", padding: "0px" }}
                   name="status"
@@ -150,11 +157,12 @@ const CartItems = (props) => {
             <p>Pincode : {address.pincode}</p>
           </div>
 
-          {props?.display === "Your Orders" && (diffrence <= 1 && <div className="priceContainer">
+          {(productStatus === "Successfull"  ) && props?.display === "Your Orders" && (diffrence <= 1 && <div className="priceContainer">
             <span className="cancelButton" onClick={() => handleCancel(item._id)}>Cancel Product</span>
           </div>)}
 
-          {props?.display === "Orders" && <div className="priceContainer">
+
+          {(props?.display === "Orders" &&  productStatus !== "Delivered") && <div className="priceContainer">
             <span className="cancelButton" onClick={() => handleCancel(item._id)}>Cancel Product</span>
           </div>}
 
@@ -169,7 +177,7 @@ const CartItems = (props) => {
 
       {page === "cart" && (
         <div className="removeContainer">
-          <p onClick={() => handleItemDelete(key,quantity)}>Remove</p>
+          <p onClick={() => handleItemDelete(key, quantity)}>Remove</p>
         </div>
       )}
     </div>

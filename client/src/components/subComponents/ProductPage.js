@@ -127,6 +127,8 @@ const ProductPage = () => {
   };
 
   const handleCart = async (e) => {
+
+    
     e.preventDefault()
     if(!user) {
       openNotificationWithIcon("error", "Please login first");

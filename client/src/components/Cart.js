@@ -55,6 +55,7 @@ const Cart = () => {
           setCartTotal(details?.sum);
           setDelivery(details.quantity === 0 ? 0 :200)
           const d = details?.sum*0.25
+
           if(couponData === "FREEDEL") {
             setDelivery(0)
             setTotal(0 + details?.sum)
@@ -63,7 +64,7 @@ const Cart = () => {
             setDiscount(d);
             setTotal((details?.sum-d)+200)
           } else {
-            setTotal((delivery + details?.sum)-discount)
+            setTotal((200 + details?.sum)-discount)
           }
 
           setCartInfo(true);

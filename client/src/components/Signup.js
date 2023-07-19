@@ -1,48 +1,51 @@
+import { notification, Radio } from "antd";
 import React, { useState, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { notification, Radio } from "antd";
+import { useSelector, useDispatch } from "react-redux";
+
 import {
   signInWithGoogle,
   registerWithEmailAndPassword,
 } from "../firebase/auth";
 import { setUserData, setUser } from "../features/user/userSlice";
-import { useSelector, useDispatch } from "react-redux";
+
 import "../assets/styles/common.scss";
 
 const Signup = () => {
-  const user = useSelector((state) => state.user);
-  const [role, setRole] = useState("0");
-  const [value, setValue] = useState("");
+
   const inputRef = useRef(null);
-  const [api, contextHolder] = notification.useNotification();
   const Navigate = useNavigate();
   const dispatch = useDispatch();
-  const [buttonDisable,setButtonDisable] = useState(false);
+
+  const [role, setRole] = useState("0");
+  const [value, setValue] = useState("");
+  const [buttonDisable, setButtonDisable] = useState(false);
+  
+  const [api, contextHolder] = notification.useNotification();
 
   const openNotificationWithIcon = (type, message) => {
     api[type]({ message: message });
   };
 
-  const radioChange = (e) => {
-    setRole(e.target.value);
-  };
+  const radioChange = (e) => setRole(e.target.value);
+  
 
   const authRegistration = async () => {
     try {
       const response = await signInWithGoogle();
       if (response?.status === 201) {
         openNotificationWithIcon("success", "Sign in successful!");
-  
+
         setTimeout(() => {
           dispatch(setUser());
           dispatch(setUserData(response.data));
         }, 500);
       }
-    } catch(err) {
+    } catch (err) {
       console.log(err);
       openNotificationWithIcon("error", "Unable to sign up");
     }
-    
+
   };
 
   const handleSubmit = async (e) => {
@@ -58,62 +61,67 @@ const Signup = () => {
 
     if (role === "0") {
       openNotificationWithIcon("error", "Please choose a role");
-      return;
-    }
-
-    if (!name || !USERID || !password) {
-      openNotificationWithIcon("error", "Please enter all credentials");
       setButtonDisable(false)
-      return;
-    }
-
-    const isNumber = /^[0-9]+$/.test(USERID);
-    const isValidEmail = /^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(
-      USERID
-    );
-
-    if (isNumber && USERID.length === 10) {
-      // Email is a 10-digit number
-      // Continue with the desired logic
-      console.log("Email is a 10-digit number");
-      phone = USERID;
-    } else if (isValidEmail) {
-      // Email is in a valid format
-      // Continue with the desired logic
-      console.log("Email is in a valid format");
-      email = USERID;
     } else {
-      // Email is not in a valid format
-      openNotificationWithIcon("error", "Please enter a valid email address or phone number");
-      setButtonDisable(false)
-      return;
-    }
-
-    try {
-      const response = await registerWithEmailAndPassword(name, email, phone, password, role);
-      if (response) {
-  
-        openNotificationWithIcon("success", "Sign in successful!");
-        setTimeout(() => {
-          dispatch(setUser());
-          dispatch(setUserData(response));
-          setButtonDisable(false)
-          Navigate("/");
-        },500)
-  
-      } else {
-        openNotificationWithIcon("error", "Email already in use");
+      if (!name || !USERID || !password) {
+        openNotificationWithIcon("error", "Please enter all credentials");
+        setButtonDisable(false)
+        return;
       }
-    } catch(err) {
-      console.log(err);
-      openNotificationWithIcon("error", "Email already in use");
+
+      const isNumber = /^[0-9]+$/.test(USERID);
+      const isValidEmail = /^[a-zA-Z0-9.+_-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+$/.test(
+        USERID
+      );
+
+      if (isNumber && USERID.length === 10) {
+        // Email is a 10-digit number
+        // Continue with the desired logic
+        console.log("Email is a 10-digit number");
+        phone = USERID;
+      } else if (isValidEmail) {
+        // Email is in a valid format
+        // Continue with the desired logic
+        console.log("Email is in a valid format");
+        email = USERID;
+      } else {
+        // Email is not in a valid format
+        openNotificationWithIcon("error", "Please enter a valid email address or phone number");
+        setButtonDisable(false)
+        return;
+      }
+
+      try {
+        const response = await registerWithEmailAndPassword(name, email, phone, password, role);
+        if (response) {
+
+          openNotificationWithIcon("success", "Sign in successful!");
+          setTimeout(() => {
+            dispatch(setUser());
+            dispatch(setUserData(response));
+            setButtonDisable(false)
+            Navigate("/");
+          }, 500)
+
+        } else {
+          openNotificationWithIcon("error", "Email already in use");
+        }
+      } catch (err) {
+        console.log(err);
+        console.log("Password must be 6 char long")
+        openNotificationWithIcon("error", "Password must be 6 charachter long");
+      }
+
+      e.target.name.value = "";
+      e.target.password.value = "";
+      e.target.USERID.value = "";
     }
 
-    
 
-    e.target.name.value = "";
-    e.target.password.value = "";
-    e.target.USERID.value = "";
+
+
+
+
     setButtonDisable(false)
   };
 
@@ -155,7 +163,7 @@ const Signup = () => {
             <Radio value={"Customer"}>Customer</Radio>
             <Radio value={"Vendor"}>Vendor</Radio>
           </Radio.Group>
-          <button disabled={buttonDisable}>{buttonDisable === true ? "SINGING UP... ": "SIGN UP" }</button>
+          <button disabled={buttonDisable}>{buttonDisable === true ? "SINGING UP... " : "SIGN UP"}</button>
         </form>
         <p>
           Already have an account? <Link to="/signin">Sign in</Link>
