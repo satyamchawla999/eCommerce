@@ -5,6 +5,7 @@ import axios from "axios";
 import "../../assets/styles/updateProfile.scss";
 import { getUserImages } from "../../Utils/constant";
 import { setUserData } from "../../features/user/userSlice";
+import { updateProfile } from "../../Utils/service";
 
 const UpdateProfile = (props) => {
   const { display } = props;
@@ -48,13 +49,7 @@ const UpdateProfile = (props) => {
     console.log(formData);
 
     try {
-      const response = await axios.post(
-        `http://localhost:8000/user/update-profile`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await updateProfile(formData) 
       if (response.status === 201) {
         if (response.data.message === "Existed!") {
           openNotificationWithIcon(

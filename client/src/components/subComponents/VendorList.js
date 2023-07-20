@@ -3,6 +3,7 @@ import axios from "axios"
 import {useSelector} from "react-redux";
 import "../../assets/styles/vendorList.scss";
 import VendorListItems from "./VendorListItems";
+import { getUsersFromDB, validateUser } from "../../Utils/service";
 
 const VendorList = (props) => {
   const { display } = props;
@@ -16,10 +17,7 @@ const VendorList = (props) => {
   useEffect(() => {
     const getUsers = async () => {
       try {
-        const response = await axios.post(
-          "http://localhost:8000/user/get-users",
-          { role: "Vendor" }
-        );
+        const response = await getUsersFromDB("Vendor");
         if ((response.status = 201)) {
           setVendor(response.data);
         }
@@ -33,10 +31,7 @@ const VendorList = (props) => {
 
   const handleClick = async (id) => {
     try {
-        const response = await axios.post(
-          "http://localhost:8000/user/validate-vendor",
-          { uid: id }
-        );
+        const response = await validateUser(id)
         if ((response.status = 201)) {
           setUpdate(!update);
         }

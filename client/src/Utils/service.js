@@ -46,3 +46,23 @@ export const addProduct = (formAction,formData)=> axios.post(
     headers: { "Content-Type": "multipart/form-data" },
   }
 );
+
+export const getUsersFromDB = (role) => axios.post(
+  "http://localhost:8000/user/get-users",
+  { role: role }
+);
+
+export const validateUser = (id)=> axios.post(
+  "http://localhost:8000/user/validate-vendor",
+  { uid: id }
+);
+
+export const updateProfile = (formData)=> axios.post(
+  `http://localhost:8000/user/update-profile`,
+  formData,
+  {
+    headers: { "Content-Type": "multipart/form-data" },
+  }
+);
+
+
