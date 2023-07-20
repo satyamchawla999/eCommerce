@@ -12,7 +12,7 @@ const UpdateProfile = (props) => {
   const [values, setValues] = useState({
     name: userData?.name,
     email: userData?.email,
-    phone: userData?.phone,
+    phone: userData?.phone === "NA" ? "" : userData?.phone,
     bName: userData?.bName,
     bType: userData?.bType,
     gNo: userData?.gNo,
@@ -107,19 +107,19 @@ const UpdateProfile = (props) => {
   const handleValues = (e) => {
     const { name, value } = e.target;
 
-    const trimmedValue = value.trim();
+    // const trimmedValue = value.trim();
 
     if (name === "phone") {
-      if (/^\d{0,10}$/.test(trimmedValue)) {
+      if (/^\d{0,10}$/.test(value)) {
         setValues((prevValues) => ({
           ...prevValues,
-          [name]: trimmedValue,
+          [name]: value,
         }));
       }
     } else {
       setValues((prevValues) => ({
         ...prevValues,
-        [name]: trimmedValue,
+        [name]: value,
       }));
     }
   };

@@ -25,14 +25,15 @@ const Header = () => {
     setImg(getUserImages(userData));
     // setUserData(userData)
     // console.log("hello")
-  }, [user]);
+  }, []);
 
   const handleLogOut = async () => {
     await logout();
     // setUserData({})
-    dispatch(deleteUser());
+    dispatch(deleteUser())
     navigate("/signin");
-    window.location.reload(); 
+    setOpen(!open)
+    // window.location.reload(); 
   };
 
   const handleClick = async (category, subCategory) => {
@@ -103,7 +104,7 @@ const Header = () => {
 
       {/* {user && ( */}
       <Transition.Root show={open} as={Fragment}>
-        <Dialog as="div" className="relative z-0" onClose={setOpen}>
+        <Dialog as="div" className="relative z-10" onClose={setOpen}>
           <Transition.Child
             as={Fragment}
             enter="ease-in-out duration-500"

@@ -18,6 +18,7 @@ const userSlice = createSlice({
         },
         deleteUser : (state)=>{
             state.user = false;
+            console.log(state.user,"delete user")
             state.userData = {};
         },
         setCoupon : (state,action)=>{

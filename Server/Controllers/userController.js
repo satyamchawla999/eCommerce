@@ -46,16 +46,20 @@ module.exports.signUp = async (req, res) => {
     let user = await User.findOne({ uid: req.body.uid });
     let emailFound = false;
     let phoneFound = false;
-    if(req.body.email !== "NA") {
-      emailFound = await User.findOne({ uid: req.body.email });
+    if (req.body.email !== "NA") {
+      let email = await User.findOne({ email: req.body.email });
+      console.log("yes email")
+      if (email) emailFound = true;
     }
 
-    if(req.body.phone !== "NA") {
-      phoneFound = await User.findOne({ uid: req.body.phone });
+    if (req.body.phone !== "NA") {
+      let phone = await User.findOne({ phone: req.body.phone });
+      console.log(phone)
+      if (phone) phoneFound = true;
     }
-    
 
-    if (!user && !emailFound && !phoneFound) {
+
+    if (!user && emailFound === false && phoneFound === false) {
       user = await User.create(req.body);
       user = await User.findOne({ uid: req.body.uid });
       return res.status(201).send(user);
@@ -92,7 +96,7 @@ module.exports.signIn = async (req, res) => {
     }
 
     if (user) {
-      if(user.password === password) {
+      if (user.password === password) {
         if (user.validation === true) {
           return res.status(201).send(user);
         } else {
@@ -298,8 +302,8 @@ module.exports.updateProfile = async (req, res) => {
   }
 
   try {
-    let phoneFound = await User.findOne({ phone: req.body.phone, uid: { $ne: req.body.uid }});
-    let emailFound = await User.findOne({ email: req.body.email, uid: { $ne: req.body.uid }});
+    let phoneFound = await User.findOne({ phone: req.body.phone, uid: { $ne: req.body.uid } });
+    let emailFound = await User.findOne({ email: req.body.email, uid: { $ne: req.body.uid } });
 
     if (phoneFound || emailFound) {
 
@@ -314,7 +318,7 @@ module.exports.updateProfile = async (req, res) => {
 
     } else {
       let user = await User.findOne({ uid: req.body.uid });
-      console.log("yes yes",req.body.uid)
+      console.log("yes yes", req.body.uid)
       if (user) {
 
         let imgUrl = [
@@ -331,7 +335,7 @@ module.exports.updateProfile = async (req, res) => {
         }
 
         if (user.password !== req.body?.password && req.body?.password && checked) {
-          console.log(user.password , "and" ,req.body?.password )
+          console.log(user.password, "and", req.body?.password)
           message = "Password not matched!"
         }
 
@@ -339,7 +343,7 @@ module.exports.updateProfile = async (req, res) => {
         const mergedData = { ...user.toObject(), ...updatedData };
         Object.assign(user, mergedData);
         const savedData = await user.save();
-        
+
         const newData = {
           user: savedData,
           message: message
@@ -353,7 +357,7 @@ module.exports.updateProfile = async (req, res) => {
     }
 
   } catch (err) {
-    console.error(err,"*******");
+    console.error(err, "*******");
     res.statusMessage = "An error occurred while creating the user.";
     return res.status(500).end();
   }
