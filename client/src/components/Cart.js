@@ -87,7 +87,7 @@ const Cart = () => {
     console.log(data);
 
     try {
-      const response = await addCart();
+      const response = await addCart(data);
 
       if (response.status === 201) {
         console.log("added to cart");

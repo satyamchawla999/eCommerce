@@ -32,7 +32,6 @@ const Header = () => {
     // setUserData({})
     dispatch(deleteUser());
     navigate("/signin");
-    window.location.reload(); 
   };
 
   const handleClick = async (category, subCategory) => {

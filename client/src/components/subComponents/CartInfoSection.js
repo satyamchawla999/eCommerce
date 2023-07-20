@@ -64,6 +64,11 @@ const CartInfoSection = (props) => {
   const handleCoupon = (e) => {
     e.preventDefault();
 
+    if (cartQuantity === 0) {
+      openNotificationWithIcon("error", "Cart is Empty!");
+      return;
+    }
+
     const value = Coupon.current.value;
     let discount = props.discount;
     let delivery = props.delivery;
