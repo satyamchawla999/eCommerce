@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
 import { BASE_IMG_URL } from "../../Utils/constant";
 import { useSelector } from "react-redux";
 import "../../assets/styles/cart.scss";

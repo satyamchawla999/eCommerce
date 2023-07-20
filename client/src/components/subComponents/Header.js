@@ -32,6 +32,7 @@ const Header = () => {
     // setUserData({})
     dispatch(deleteUser());
     navigate("/signin");
+    window.location.reload(); 
   };
 
   const handleClick = async (category, subCategory) => {
@@ -49,12 +50,12 @@ const Header = () => {
       }
     );
 
-    window.location.reload(); // Perform a full page reload
+    window.location.reload(); 
   };
 
   const handleNavigate = (state) => {
     navigate({ pathname: "/profile" }, { state: state });
-    window.location.reload(); // Perform a full page reload
+    window.location.reload();
   };
 
   return (
@@ -168,7 +169,7 @@ const Header = () => {
 
 
                         {!user && <>
-                          <Link to="/signin"><div
+                          <Link to="/signin"><div onClick={() => setOpen(!open)}
                             className="sideBarItems"
                           >
                             Sign In{" "}
@@ -176,8 +177,8 @@ const Header = () => {
                           </div></Link>
 
 
-                          <Link to="/signup"><div
-                            className="sideBarItems"
+                          <Link to="/signup" ><div onClick={() => setOpen(!open)}
+                            className="sideBarItems" 
                           >
                             Sign Up{" "}
                             <i class="fa-solid fa-user-plus"></i>
@@ -192,10 +193,10 @@ const Header = () => {
                           Profile
                           <i className="fa-regular fa-user"></i>
                         </div>
-                        <Link className="sideBarItems" to="/">
+                        <Link className="sideBarItems" to="/" onClick={() => setOpen(!open)}>
                           Home <i className="fa-solid fa-house"></i>
                         </Link>
-                        <Link className="sideBarItems" to="/cart">
+                        <Link className="sideBarItems" to="/cart" onClick={() => setOpen(!open)}>
                           Cart <i className="fa-brands fa-opencart"></i>
                         </Link>
                         <div

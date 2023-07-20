@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import "../../assets/styles/address.scss";
 import { useSelector } from "react-redux";
-import axios from 'axios';
 import { AddressItems } from "./index";
+import { addAddress, deleteItems, getAddressFromDB } from '../../Utils/service';
 
 const Address = (props) => {
     const { display } = props
@@ -13,9 +13,7 @@ const Address = (props) => {
     useEffect(() => {
         const getAddress = async () => {
             try {
-                const response = await axios.post(
-                    "http://localhost:8000/user/get-address", { uid: userData.uid }
-                );
+                const response = await getAddressFromDB(userData.uid)
 
                 if (response.status === 201) {
                     setAddress(response.data);
@@ -44,9 +42,7 @@ const Address = (props) => {
         }
 
         try {
-            const response = await axios.post(
-                "http://localhost:8000/user/add-address", data
-            );
+            const response = await addAddress(data)
 
             if (response.status === 201) {
                 setNewAddress(!newAddress);
@@ -66,9 +62,7 @@ const Address = (props) => {
     const handleDelete = async (e,index) => {
         e.stopPropagation();
         try {
-            const response = await axios.post(
-                "http://localhost:8000/user/delete-items", {uid:userData.uid,index:index,type:"address"}
-            );
+            const response = await deleteItems(userData.uid,index,"address")
 
             if (response.status === 201) {
                 console.log(response.data)
@@ -88,17 +82,17 @@ const Address = (props) => {
                     <h2 className="text-2xl mb-10 font-bold tracking-tight text-gray-900">{display}</h2>
 
                     <label>House No.</label>
-                    <input name="hno" type="text" required />
+                    <input name="hno" type="text" pattern="[^\s]+" required />
                     <label>Street</label>
-                    <input name="street" type="text" required />
+                    <input name="street" type="text" pattern="[^\s]+" required />
                     <label>Landmark</label>
-                    <input name="landmark" type="text" required />
+                    <input name="landmark" type="text" pattern="[^\s]+" required />
                     <label>City</label>
-                    <input name="city" type="text" required />
+                    <input name="city" type="text" pattern="[^\s]+" required />
                     <label>State</label>
-                    <input name="state" type="text" required />
+                    <input name="state" type="text" pattern="[^\s]+" required />
                     <label>Pincode</label>
-                    <input name="pincode" type="text" required />
+                    <input name="pincode" type="text" pattern="[^\s]+" required />
 
                     <button>
                         Add Address

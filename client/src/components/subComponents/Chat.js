@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { getChatMessages } from "../../Utils/service";
+import { getChatMessages,sendMessage } from "../../Utils/service";
 import "../../assets/styles/chat.scss";
 
 const Chat = (props) => {
@@ -55,10 +55,7 @@ const Chat = (props) => {
     }
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/chat/send-message",
-        { uid: uid, message: message, sender }
-      );
+      const response = await sendMessage(uid,message,sender)
 
       if (response.status === 201) {
         console.log(response.data, "hello");

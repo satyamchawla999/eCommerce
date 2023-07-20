@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import "../../assets/styles/adminChat.scss";
 import { useSelector } from "react-redux";
 import { Chat } from "../subComponents";
-import { getUserImages } from "../../Utils/constant"
-import axios from "axios";
+import { getUserImages } from "../../Utils/constant";
+import { getChatUsersFromDB } from "../../Utils/service";
 
 const AdminChat = () => {
   const [display, setDisplay] = useState("Profile");
@@ -12,15 +12,12 @@ const AdminChat = () => {
   const [data, setData] = useState({});
 
   const userData = useSelector((state) => state.userData);
-  const [img,setImg] = useState(getUserImages(userData))
+  const [img, setImg] = useState(getUserImages(userData));
 
   useEffect(() => {
     const getChatUsers = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/chat/get-chat-users"
-        );
-
+        const response = await getChatUsersFromDB() 
         if (response.status === 201) {
           setUsers(response.data);
         }
@@ -35,7 +32,7 @@ const AdminChat = () => {
   const handleDisplay = (value, uid, name, image) => {
     setDisplay(value);
     setUid(uid);
-    setData({ uid, name, image })
+    setData({ uid, name, image });
   };
 
   return (
@@ -51,19 +48,24 @@ const AdminChat = () => {
         </div>
 
         {users.map((user) => {
-          const image = getUserImages({ imgUrl: user?.imgUrl }).image1
-          return <div
-            className={`customerInfoItems ${display === user?.cName && "toggel"}`}
-            onClick={() => handleDisplay("Profile", user.cUid, user.cName, image)}
-          >
-            <img src={image} alt="" />
+          const image = getUserImages({ imgUrl: user?.imgUrl }).image1;
+          return (
+            <div
+              className={`customerInfoItems ${
+                display === user?.cName && "toggel"
+              }`}
+              onClick={() =>
+                handleDisplay("Profile", user.cUid, user.cName, image)
+              }
+            >
+              <img src={image} alt="" />
 
-            <div>
-              <p>{user?.cName}</p>
-              <p style={{ fontSize: "12px" }}>{user?.USERID}</p>
+              <div>
+                <p>{user?.cName}</p>
+                <p style={{ fontSize: "12px" }}>{user?.USERID}</p>
+              </div>
             </div>
-
-          </div>
+          );
         })}
       </div>
 

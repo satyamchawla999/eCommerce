@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { notification} from "antd";
-import axios from "axios";
+import { notification } from "antd";
+import { addProduct } from "../../Utils/service";
 
 import { getValues, getImages } from "../../Utils/constant";
 
 const ModalData = (props) => {
-
-  const { product,handleCancel,setProductPage } = props;
+  const { product, handleCancel, setProductPage } = props;
   const userData = useSelector((state) => state.userData);
 
   const [values, setValues] = useState(getValues(product));
@@ -24,30 +23,29 @@ const ModalData = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    console.log(formData)
+    console.log(formData);
 
     try {
-      const response = await axios.post(
-        `http://localhost:8000/product/${formAction}`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
-      if(response.status === 201) {
+      const response = await addProduct(formAction, formData);
+      if (response.status === 201) {
         openNotificationWithIcon("success", "Product Added Successfully");
         console.log("added");
       } else {
         openNotificationWithIcon("error", "Please Try Again");
       }
-
     } catch (err) {
       console.error("Error submitting form data:", err);
     }
+    // Clear form data
+
+    if (!product) {
+      setValues(getValues(null)); // Reset to initial values or an empty state
+      setImg(getImages(null));
+      e.target.reset(); // Reset the form fields
+    }
+
     handleCancel();
     props?.setProductPageUpdate((prevValues) => !prevValues);
-
-    // clear form data 
   };
 
   const handleChange = (e) => {
@@ -67,18 +65,16 @@ const ModalData = (props) => {
   };
 
   const handleValues = (e) => {
-    setValues(e.target.value)
-  }
+    setValues(e.target.value);
+  };
 
   const handleDraft = () => {
-    setDraft(!draft)
-  }
-
-
+    setDraft(!draft);
+  };
 
   return (
     <>
-    {contextHolder}
+      {contextHolder}
       <form
         className="modalForm"
         onSubmit={handleSubmit}
@@ -134,10 +130,16 @@ const ModalData = (props) => {
               required={isRequired}
             />
           </div>
-
           <div className="valueInput">
             <label>Product Name</label>
-            <input type="text" name="name" value={values?.name} onChange={handleValues} required />
+            <input
+              type="text"
+              name="name"
+              value={values?.name}
+              onChange={handleValues}
+              required
+              pattern="^\S+.*$"
+            />
 
             <label htmlFor="category">Category</label>
             <select name="category" id="category">
@@ -154,14 +156,42 @@ const ModalData = (props) => {
             </select>
 
             <label>Price</label>
-            <input type="number" name="price" required value={values?.price} onChange={handleValues} />
+            <input
+              type="number"
+              name="price"
+              required
+              value={values?.price}
+              onChange={handleValues}
+            />
 
             <label>Description</label>
-            <input type="text" name="description" required value={values?.description} onChange={handleValues} />
+            <input
+              type="text"
+              name="description"
+              required
+              value={values?.description}
+              onChange={handleValues}
+            />
 
             <label>Product Code</label>
-            <input type="text" name="uid" required value={values?.uid} disabled={product ? true : false} onChange={handleValues} />
-            {(product) && <input style={{ display: "none" }} type="text" name="uid" required value={values?.uid} />}
+            <input
+              type="text"
+              name="uid"
+              required
+              value={values?.uid}
+              disabled={product ? true : false}
+              onChange={handleValues}
+              pattern="^\S+.*$"
+            />
+            {product && (
+              <input
+                style={{ display: "none" }}
+                type="text"
+                name="uid"
+                required
+                value={values?.uid}
+              />
+            )}
 
             <input
               className="disable"
@@ -170,9 +200,8 @@ const ModalData = (props) => {
               value={product ? values?.vName : userData.name}
               onChange={handleValues}
               required
+              pattern="^\S+.*$"
             />
-
-
 
             <input
               className="disable"
@@ -181,29 +210,75 @@ const ModalData = (props) => {
               value={product ? values?.vUid : userData.uid}
               onChange={handleValues}
               required
+              pattern="^\S+.*$"
             />
 
             <label>Brand Name</label>
-            <input type="text" name="brandName" required value={values?.brandName} onClick={handleValues} />
+            <input
+              type="text"
+              name="brandName"
+              required
+              value={values?.brandName}
+              onClick={handleValues}
+              pattern="^\S+.*$"
+            />
 
-            {product && product?.draft === true && <div style={{ display: "flex", alignItems: "center" }} className="draft" onClick={handleDraft}>
-              <input style={{ height: "18px", width: "18px", margin: "0px", padding: "0" }} checked={draft} id="draft" name="draft" type="checkbox" value={values?.draft === true ? !draft : draft} />
-              <label style={{ marginLeft: "5px" }} htmlFor="draft"> {values?.draft === true ? <>Publish</> : <>Add To Draft</>} </label>
-            </div> }
+            {product && product?.draft === true && (
+              <div
+                style={{ display: "flex", alignItems: "center" }}
+                className="draft"
+                onClick={handleDraft}
+              >
+                <input
+                  style={{
+                    height: "18px",
+                    width: "18px",
+                    margin: "0px",
+                    padding: "0",
+                  }}
+                  checked={draft}
+                  id="draft"
+                  name="draft"
+                  type="checkbox"
+                  value={values?.draft === true ? !draft : draft}
+                />
+                <label style={{ marginLeft: "5px" }} htmlFor="draft">
+                  {values?.draft === true ? <>Publish</> : <>Add To Draft</>}
+                </label>
+              </div>
+            )}
 
-            {!product && <div style={{ display: "flex", alignItems: "center" }} className="draft" onClick={handleDraft}>
-              <input style={{ height: "18px", width: "18px", margin: "0px", padding: "0" }} checked={draft} id="draft" name="draft" type="checkbox" value={values?.draft === true ? !draft : draft} />
-              <label style={{ marginLeft: "5px" }} htmlFor="draft"> {values?.draft === true ? <>Publish</> : <>Add To Draft</>} </label>
-            </div>}
-            
-
+            {!product && (
+              <div
+                style={{ display: "flex", alignItems: "center" }}
+                className="draft"
+                onClick={handleDraft}
+              >
+                <input
+                  style={{
+                    height: "18px",
+                    width: "18px",
+                    margin: "0px",
+                    padding: "0",
+                  }}
+                  checked={draft}
+                  id="draft"
+                  name="draft"
+                  type="checkbox"
+                  value={values?.draft === true ? !draft : draft}
+                />
+                <label style={{ marginLeft: "5px" }} htmlFor="draft">
+                  {values?.draft === true ? <>Publish</> : <>Add To Draft</>}
+                </label>
+              </div>
+            )}
           </div>
+          ;
         </div>
 
         <div className="formButton">
           <button>Submit</button>
         </div>
-
       </form>
     </>
   );
