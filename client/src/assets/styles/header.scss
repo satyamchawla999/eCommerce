@@ -12,7 +12,11 @@
     align-items: center;
 
     border-bottom: 1px solid lightgrey;
-    z-index: 11;
+    background-color: white;
+    z-index: 5;
+    position: sticky;
+    top:0px;
+    // top:0px;
 
     .left {
         width: 33%;
@@ -123,3 +127,7 @@
     cursor: pointer;
     display: none;
 }
+
+// .sidebarZindex{
+//     z-index: 10;
+// }

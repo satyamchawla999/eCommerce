@@ -1,5 +1,6 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
+import { userSignUp } from "../Utils/service";
 import { auth, googleProvider } from "./firebase";
 
 import {
@@ -27,33 +28,29 @@ const signInWithGoogle = async () => {
       gNo: "NA",
       bName: "NA",
       bType: "NA",
+      validation:true
     };
 
-    const response = await axios.post(
-      "http://localhost:8000/user/sign-up",
-      data
-    );
+    const response = await userSignUp(data)
 
     if (response.status === 201) {
       return response;
     } else {
-      console.log("auth else")
       return {};
     }
+
   } catch (err) {
-    console.log("hello hello hello")
     console.log(err);
   }
 };
 
-// MANUAL SIGN IN AND ADDING USER TO DATABASE WITH QUERY AND ADDDOCS
 const logInWithEmailAndPassword = async (email, phone, password) => {
   try {
 
     const data = {
-      email: email,
-      phone: phone,
-      password: password,
+      email,
+      phone,
+      password,
       authProvider: "Manual",
     };
 
@@ -70,15 +67,13 @@ const logInWithEmailAndPassword = async (email, phone, password) => {
   }
 };
 
-// MANUAL SIGN UP AND ADDING USER TO DATABASE WITH QUERY AND ADDDOCS
 const registerWithEmailAndPassword = async (name, email, phone, password, role) => {
   try {
     let data = {};
-    let res = {};
     let user = {};
 
     if (email !== "NA") {
-      res = await createUserWithEmailAndPassword(auth, email, password);
+      let res = await createUserWithEmailAndPassword(auth, email, password);
       user = res.user;
       await updateProfile(user, { displayName: name });
     } else {
@@ -92,9 +87,9 @@ const registerWithEmailAndPassword = async (name, email, phone, password, role) 
       email: email,
       phone: phone,
       password: password,
-      imgUrl: ["NA", "NA"],
       role: role,
       authProvider: "Manual",
+      imgUrl: ["NA", "NA"],
       gNo: "NA",
       bName: "NA",
       bType: "NA",
@@ -112,11 +107,9 @@ const registerWithEmailAndPassword = async (name, email, phone, password, role) 
     }
   } catch (err) {
     console.error(err);
-
   }
 };
 
-// LOGOUT AND SET ONLINE TO FALSE IN FIRESTORE DATABASE
 const logout = async () => {
   signOut(auth);
 };

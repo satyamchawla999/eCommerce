@@ -5,6 +5,7 @@ import axios from "axios";
 import "../../assets/styles/updateProfile.scss";
 import { getUserImages } from "../../Utils/constant";
 import { setUserData } from "../../features/user/userSlice";
+import { updateProfile } from "../../Utils/service";
 
 const UpdateProfile = (props) => {
   const { display } = props;
@@ -12,7 +13,7 @@ const UpdateProfile = (props) => {
   const [values, setValues] = useState({
     name: userData?.name,
     email: userData?.email,
-    phone: userData?.phone,
+    phone: userData?.phone === "NA" ? "" : userData?.phone,
     bName: userData?.bName,
     bType: userData?.bType,
     gNo: userData?.gNo,
@@ -48,13 +49,7 @@ const UpdateProfile = (props) => {
     console.log(formData);
 
     try {
-      const response = await axios.post(
-        `http://localhost:8000/user/update-profile`,
-        formData,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      );
+      const response = await updateProfile(formData) 
       if (response.status === 201) {
         if (response.data.message === "Existed!") {
           openNotificationWithIcon(
@@ -107,19 +102,19 @@ const UpdateProfile = (props) => {
   const handleValues = (e) => {
     const { name, value } = e.target;
 
-    const trimmedValue = value.trim();
+    // const trimmedValue = value.trim();
 
     if (name === "phone") {
-      if (/^\d{0,10}$/.test(trimmedValue)) {
+      if (/^\d{0,10}$/.test(value)) {
         setValues((prevValues) => ({
           ...prevValues,
-          [name]: trimmedValue,
+          [name]: value,
         }));
       }
     } else {
       setValues((prevValues) => ({
         ...prevValues,
-        [name]: trimmedValue,
+        [name]: value,
       }));
     }
   };

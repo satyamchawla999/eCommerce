@@ -15,7 +15,7 @@ const CheckoutPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [cartTotal, setCartTotal] = useState(0);
   const [cartQuantity, setCartQuantity] = useState(0);
-  const [delivery, setDelivery] = useState(200);
+  const [delivery, setDelivery] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [total, setTotal] = useState(delivery + cartTotal - discount);
   const [cartInfo, setCartInfo] = useState(false);
@@ -52,12 +52,17 @@ const CheckoutPage = () => {
           const d = details?.sum * 0.25;
 
           if (couponData === "FREEDEL") {
+            console.log("del 0")
             setDelivery(0);
             setTotal(0 + details?.sum);
             // dispatch(setCoupon({coupon:couponData}))
           } else if (couponData === "EPIC") {
             setDiscount(d);
+            console.log("epic 0")
+
             setTotal(details?.sum - d + 200);
+            setDelivery(200);
+
             // dispatch(setCoupon({coupon:couponData}))
           } else {
             setTotal(200 + details?.sum - discount);

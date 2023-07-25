@@ -117,7 +117,6 @@ module.exports.getProduct = async (req, res) => {
     if (product !== []) {
       return res.status(201).send(product);
     } else {
-      res.statusMessage = "product Already Exists";
       return res.status(409).end();
     }
   } catch (err) {

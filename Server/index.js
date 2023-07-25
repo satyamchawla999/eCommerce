@@ -15,7 +15,7 @@ app.use('/Products', express.static(__dirname + '/Products'));
 app.use('/Users', express.static(__dirname + '/Users'));
 
 
-app.use('/', cors(), require('./Routes'));
+app.use('/', require('./Routes'));
 
 app.listen(port, (err) => {
     if (err) {

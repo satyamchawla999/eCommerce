@@ -3,14 +3,16 @@ const Product = require("../Model/products");
 
 module.exports.addOrder = async (req, res) => {
     let { coupon,quantity,units,sales,pUid } = req.body;
-    console.log("units",units,typeof(units));
-    console.log("sales",sales,typeof(sales));
+    // console.log("units",units,typeof(units));
+    // console.log("sales",sales,typeof(sales));
     if(coupon === '') req.body.coupon = "NA"
     try {
 
         let product = await Product.findOne({uid:pUid});
         let oldSales = product.sales;
+
         product.sales = oldSales+(sales);
+
         let oldUnits = product.units;
         product.units = oldUnits + units;
         product.markModified("sales");
@@ -67,7 +69,7 @@ module.exports.changeStatus = async (req, res) => {
     try {
         let orders = await Order.findOne({_id:_id});
         orders.status = status;
-        orders.markModified["status"];
+        orders.markModified("status");
         orders.save()
         return res.status(201).send(orders);
     } catch (err) {

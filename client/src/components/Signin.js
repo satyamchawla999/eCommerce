@@ -82,12 +82,11 @@ const Signin = () => {
           setButtonDisable(false);
         }, 1000);
       } else if (response.status === 204) {
+        console.log(response)
         openNotificationWithIcon(
           "error",
-          "Account is disabled, please contact admin"
+          response.statusText
         );
-      } else if (response.status === 206) {
-        openNotificationWithIcon("error", "Wrong Password");
       } else {
         openNotificationWithIcon("error", "User not found");
       }
